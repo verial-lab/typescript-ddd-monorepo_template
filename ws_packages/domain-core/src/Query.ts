@@ -15,7 +15,7 @@ export interface QuerySystemProps {
 // Combined properties
 export type QueryProps<T> = QueryCreateProps<T> & QuerySystemProps;
 
-export interface IQuery<T, R> {
+export interface IQuery<T, _R> {
   readonly type: string;
   readonly payload: T;
   readonly timestamp: Date;
