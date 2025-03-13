@@ -4,7 +4,8 @@
  */
 export { createApp } from './ExpressApp';
 export { startServer } from './ExpressServer';
+export { start } from './Server';
 
 // Start the server
-import { startServer } from './ExpressServer';
-startServer();
+import { start } from './Server';
+start();
