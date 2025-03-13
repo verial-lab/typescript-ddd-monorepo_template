@@ -24,6 +24,7 @@
     "@repo-tooling/vitest": "workspace:*"
   },
   "dependencies": {
+    "@repo-domains/domain-core": "workspace:*",
     "pino": "^8.18.0"
   }
 }
