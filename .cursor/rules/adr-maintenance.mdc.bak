@@ -1,0 +1,5 @@
+---
+description: Guidelines for maintaining Architectural Decision Records (ADRs) in the project
+globs: 
+alwaysApply: false
+---
