@@ -36,7 +36,7 @@
     "@repo-tooling/vitest": "workspace:*"
   },
   "dependencies": {
-    "@repo-packages/domain-core": "workspace:*",
+    "@repo-domains/domain-core": "workspace:*",
     "@repo-packages/logger": "workspace:*",
     "uuid": "^9.0.1"
   }
