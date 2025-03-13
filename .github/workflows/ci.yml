@@ -53,7 +53,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Upload workspace
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: workspace
           path: |
@@ -147,7 +147,7 @@ jobs:
         run: pnpm build
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
           path: |
