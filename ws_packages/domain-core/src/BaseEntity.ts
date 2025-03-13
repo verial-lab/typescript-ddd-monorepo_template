@@ -6,51 +6,51 @@ import type { EntityCreateProps, EntityProps, EntitySystemProps } from './Entity
  * Provides common functionality like timestamps
  */
 export interface BaseEntityCreateProps extends EntityCreateProps {
-    // Add any common properties for all entities here
+  // Add any common properties for all entities here
 }
 
 export interface BaseEntitySystemProps extends EntitySystemProps {
-    createdAt: Date;
-    updatedAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export type BaseEntityProps<T extends BaseEntityCreateProps> = EntityProps<
-    T,
-    BaseEntitySystemProps
+  T,
+  BaseEntitySystemProps
 >;
 
 /**
  * Base entity class that all domain entities should extend
  * Provides common functionality like timestamps
- * 
+ *
  * @template T - The type of properties required to create this entity
  */
 export abstract class BaseEntity<T extends BaseEntityCreateProps> extends Entity<
-    BaseEntityProps<T>
+  BaseEntityProps<T>
 > {
-    constructor(createProps: T, id?: string) {
-        const now = new Date();
+  constructor(createProps: T, id?: string) {
+    const now = new Date();
 
-        // Combine user props with system props
-        const props: BaseEntityProps<T> = {
-            ...createProps,
-            createdAt: now,
-            updatedAt: now,
-        };
+    // Combine user props with system props
+    const props: BaseEntityProps<T> = {
+      ...createProps,
+      createdAt: now,
+      updatedAt: now,
+    };
 
-        super(props, id);
-    }
+    super(props, id);
+  }
 
-    get createdAt(): Date {
-        return this.props.createdAt;
-    }
+  get createdAt(): Date {
+    return this.props.createdAt;
+  }
 
-    get updatedAt(): Date {
-        return this.props.updatedAt;
-    }
+  get updatedAt(): Date {
+    return this.props.updatedAt;
+  }
 
-    protected updateTimestamp(): void {
-        // In a real implementation, you'd need to handle immutability properly
-        (this.props as { updatedAt: Date }).updatedAt = new Date();
-    }
+  protected updateTimestamp(): void {
+    // In a real implementation, you'd need to handle immutability properly
+    (this.props as { updatedAt: Date }).updatedAt = new Date();
+  }
 }
