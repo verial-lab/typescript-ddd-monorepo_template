@@ -17,6 +17,8 @@ export interface DomainService<T, Args extends unknown[] = unknown[]> {
   execute(...args: Args): Promise<T>;
 }
 
+// Export service interfaces and implementations
+export * from './DomainService';
 export * from './AuthService';
 
 /**

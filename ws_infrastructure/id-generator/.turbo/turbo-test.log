@@ -1,0 +1,33 @@
+
+
+> @repo-infrastructure/id-generator@0.1.0 test /Users/neural/Code/Verial/typescript-ddd-monorepo_template/ws_infrastructure/id-generator
+> vitest run
+
+[?25l
+[1m[7m[36m RUN [39m[27m[22m [36mv3.0.8 [39m[90m/Users/neural/Code/Verial/typescript-ddd-monorepo_template/ws_infrastructure/id-generator[39m
+
+[?2026h
+[1m[33m ❯ [39m[22msrc/UuidGenerator.test.ts[2m [queued][22m
+
+[2m Test Files [22m[1m[32m0 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m[1m[32m0 passed[39m[22m[90m (0)[39m
+[2m   Start at [22m12:04:15
+[2m   Duration [22m413ms
+[?2026l[?2026h[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K
+[1m[33m ❯ [39m[22msrc/UuidGenerator.test.ts[2m 0/3[22m
+
+[2m Test Files [22m[1m[32m0 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m[1m[32m0 passed[39m[22m[90m (3)[39m
+[2m   Start at [22m12:04:15
+[2m   Duration [22m513ms
+[?2026l[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K[1A[K [32m✓[39m src/UuidGenerator.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 2[2mms[22m[39m
+   [32m✓[39m UuidGenerator[2m > [22mshould generate a UUID
+   [32m✓[39m UuidGenerator[2m > [22mshould generate unique IDs
+   [32m✓[39m UuidGenerator[2m > [22mshould generate valid UUID v4 format
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m3 passed[39m[22m[90m (3)[39m
+[2m   Start at [22m 12:04:15
+[2m   Duration [22m 613ms[2m (transform 40ms, setup 0ms, collect 121ms, tests 2ms, environment 0ms, prepare 88ms)[22m
+
+[?25h
