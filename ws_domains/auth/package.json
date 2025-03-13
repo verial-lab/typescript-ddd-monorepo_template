@@ -20,12 +20,10 @@
   "devDependencies": {
     "@repo-tooling/tsup": "workspace:*",
     "@repo-tooling/typescript": "workspace:*",
-    "@repo-tooling/vitest": "workspace:*"
+    "@repo-tooling/vitest": "workspace:*",
+    "typescript": "^5.8.2"
   },
   "dependencies": {
-    "@repo-packages/domain-core": "workspace:*",
-    "@repo-packages/logger": "workspace:*",
-    "bcryptjs": "^2.4.3",
-    "uuid": "^9.0.1"
+    "@repo-domains/domain-core": "workspace:*"
   }
 }

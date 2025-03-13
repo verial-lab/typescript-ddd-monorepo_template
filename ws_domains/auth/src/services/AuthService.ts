@@ -1,15 +1,22 @@
-import { logger } from '@repo-packages/logger';
-import bcrypt from 'bcryptjs';
-import { User, type UserProps } from '../entities';
+import type { DomainService, Logger } from '@repo-domains/domain-core';
+import { User, type UserCreateProps } from '../entities';
 import { UserCreatedEvent } from '../events';
 import type { UserRepository } from '../repositories';
 import { Email, Password } from '../value-objects';
+import type { HashService } from './HashService';
 
 /**
  * Authentication service
  */
-export class AuthService {
-  constructor(private readonly userRepository: UserRepository) {}
+export class AuthService implements DomainService {
+  readonly name = 'AuthService';
+  readonly description = 'Handles user authentication and registration';
+
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly hashService: HashService,
+    private readonly logger: Logger
+  ) {}
 
   /**
    * Register a new user
@@ -31,12 +38,11 @@ export class AuthService {
         throw new Error('Username already in use');
       }
 
-      // Hash password
-      const salt = await bcrypt.genSalt(10);
-      const passwordHash = await bcrypt.hash(validPassword.value, salt);
+      // Hash password using injected hash service
+      const passwordHash = await this.hashService.hash(validPassword.value);
 
       // Create and save user
-      const userProps: UserProps = {
+      const userProps: UserCreateProps = {
         email: validEmail.value,
         username,
         passwordHash,
@@ -46,11 +52,11 @@ export class AuthService {
       const savedUser = await this.userRepository.save(user);
 
       // Emit event (in a real app, this would use an event bus)
-      new UserCreatedEvent(savedUser.id).publish();
+      new UserCreatedEvent(savedUser.id).publish(this.logger);
 
       return savedUser;
     } catch (error) {
-      logger.error({ error }, 'Failed to register user');
+      this.logger.error({ error }, 'Failed to register user');
       throw error;
     }
   }
@@ -60,8 +66,11 @@ export class AuthService {
    */
   async authenticateUser(email: string, password: string): Promise<User> {
     try {
+      // Validate email using value object
+      const validEmail = Email.create(email);
+
       // Find user by email
-      const user = await this.userRepository.findByEmail(email);
+      const user = await this.userRepository.findByEmail(validEmail.value);
       if (!user) {
         throw new Error('Invalid credentials');
       }
@@ -71,15 +80,15 @@ export class AuthService {
         throw new Error('User account is inactive');
       }
 
-      // Verify password
-      const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
+      // Verify password using injected hash service
+      const isPasswordValid = await this.hashService.compare(password, user.passwordHash);
       if (!isPasswordValid) {
         throw new Error('Invalid credentials');
       }
 
       return user;
     } catch (error) {
-      logger.error({ error }, 'Failed to authenticate user');
+      this.logger.error({ error }, 'Failed to authenticate user');
       throw error;
     }
   }

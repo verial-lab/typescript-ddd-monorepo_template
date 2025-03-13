@@ -1,19 +1,12 @@
-import type { Entity } from '../entities';
-
-/**
- * Generic repository interface
- */
-export interface Repository<T extends Entity<ID>, ID> {
-  findById(id: ID): Promise<T | null>;
-  findAll(): Promise<T[]>;
-  save(entity: T): Promise<T>;
-  delete(id: ID): Promise<boolean>;
-}
+import type { Entity, EntityCreateProps } from '@repo-domains/domain-core';
+import type { Repository } from './Repository';
 
 /**
  * Generic in-memory repository implementation
  */
-export class InMemoryRepository<T extends Entity<ID>, ID> implements Repository<T, ID> {
+export class InMemoryRepository<T extends Entity<EntityCreateProps>, ID>
+  implements Repository<T, ID>
+{
   protected items: T[] = [];
 
   async findById(id: ID): Promise<T | null> {
@@ -27,8 +20,14 @@ export class InMemoryRepository<T extends Entity<ID>, ID> implements Repository<
   async save(entity: T): Promise<T> {
     const index = this.items.findIndex((item) => item.id === entity.id);
     if (index >= 0) {
-      this.items[index] = { ...entity, updatedAt: new Date() } as T;
-      return this.items[index];
+      const updatedEntity = new (
+        entity.constructor as new (
+          props: EntityCreateProps,
+          id: string
+        ) => T
+      )({ ...entity.props, updatedAt: new Date() }, entity.id);
+      this.items[index] = updatedEntity;
+      return updatedEntity;
     }
     this.items.push(entity);
     return entity;

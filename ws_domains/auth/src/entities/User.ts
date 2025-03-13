@@ -1,5 +1,5 @@
-import { BaseEntity } from '@repo-packages/domain-core';
-import type { BaseEntityCreateProps } from '@repo-packages/domain-core';
+import { BaseEntity } from '@repo-domains/domain-core';
+import type { BaseEntityCreateProps, IEntity } from '@repo-domains/domain-core';
 
 /**
  * User entity props for authentication
@@ -11,36 +11,40 @@ export interface UserCreateProps extends BaseEntityCreateProps {
   isActive?: boolean;
 }
 
-export class User extends BaseEntity<UserCreateProps> {
+export class User extends BaseEntity<UserCreateProps> implements IEntity<UserCreateProps> {
   static create(props: UserCreateProps, id?: string): User {
     return new User(props, id);
   }
 
   get email(): string {
-    return this.props.email;
+    return this._props.email;
   }
 
   get username(): string {
-    return this.props.username;
+    return this._props.username;
   }
 
   get passwordHash(): string {
-    return this.props.passwordHash;
+    return this._props.passwordHash;
   }
 
   get isActive(): boolean {
-    return this.props.isActive ?? true;
+    return this._props.isActive ?? true;
   }
 
-  deactivate(): void {
-    // In a real implementation, you'd need to handle immutability properly
-    (this.props as { isActive: boolean }).isActive = false;
-    this.updateTimestamp();
+  deactivate(): User {
+    const newProps = {
+      ...this._props,
+      isActive: false,
+    };
+    return new User(newProps, this.id);
   }
 
-  activate(): void {
-    // In a real implementation, you'd need to handle immutability properly
-    (this.props as { isActive: boolean }).isActive = true;
-    this.updateTimestamp();
+  activate(): User {
+    const newProps = {
+      ...this._props,
+      isActive: true,
+    };
+    return new User(newProps, this.id);
   }
 }

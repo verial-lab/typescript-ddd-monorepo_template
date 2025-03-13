@@ -1,11 +1,10 @@
-import { logger } from '@repo-packages/logger';
-import type { Entity } from '../entities';
-import type { User } from '../entities';
+import type { BaseEntityProps, Entity, EntityCreateProps, Logger } from '@repo-domains/domain-core';
+import type { User, UserCreateProps } from '../entities';
 
 /**
  * Generic repository interface
  */
-export interface Repository<T extends Entity<ID>, ID> {
+export interface Repository<T extends Entity<BaseEntityProps<EntityCreateProps>>, ID> {
   findById(id: ID): Promise<T | null>;
   findAll(): Promise<T[]>;
   save(entity: T): Promise<T>;
@@ -15,7 +14,9 @@ export interface Repository<T extends Entity<ID>, ID> {
 /**
  * Generic in-memory repository implementation
  */
-export class InMemoryRepository<T extends Entity<ID>, ID> implements Repository<T, ID> {
+export class InMemoryRepository<T extends Entity<BaseEntityProps<EntityCreateProps>>, ID>
+  implements Repository<T, ID>
+{
   protected items: T[] = [];
 
   async findById(id: ID): Promise<T | null> {
@@ -61,6 +62,10 @@ export class InMemoryUserRepository
   extends InMemoryRepository<User, string>
   implements UserRepository
 {
+  constructor(private readonly logger: Logger) {
+    super();
+  }
+
   async findByEmail(email: string): Promise<User | null> {
     const normalizedEmail = email.toLowerCase().trim();
     return this.items.find((user) => user.email.toLowerCase() === normalizedEmail) || null;
@@ -72,7 +77,7 @@ export class InMemoryUserRepository
   }
 
   async save(user: User): Promise<User> {
-    logger.info({ userId: user.id }, 'Saving user');
+    this.logger.info({ userId: user.id }, 'Saving user');
     return super.save(user);
   }
 }

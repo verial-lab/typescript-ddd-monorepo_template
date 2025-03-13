@@ -1,4 +1,4 @@
-import { ValueObject } from '@repo-packages/domain-core';
+import { ValueObject } from '@repo-domains/domain-core';
 
 /**
  * Email value object

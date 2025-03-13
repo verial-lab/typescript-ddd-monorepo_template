@@ -1,6 +1,7 @@
-import { logger } from '@repo-packages/logger';
+import type { Logger } from '@repo-domains/domain-core';
 import type { User } from '../entities';
-import { InMemoryRepository, type Repository } from './InMemoryRepository';
+import { InMemoryRepository } from './InMemoryRepository';
+import type { Repository } from './Repository';
 
 /**
  * User repository interface
@@ -17,6 +18,10 @@ export class InMemoryUserRepository
   extends InMemoryRepository<User, string>
   implements UserRepository
 {
+  constructor(private readonly logger: Logger) {
+    super();
+  }
+
   async findByEmail(email: string): Promise<User | null> {
     const normalizedEmail = email.toLowerCase().trim();
     return this.items.find((user) => user.email.toLowerCase() === normalizedEmail) || null;
@@ -28,7 +33,7 @@ export class InMemoryUserRepository
   }
 
   async save(user: User): Promise<User> {
-    logger.info({ userId: user.id }, 'Saving user');
+    this.logger.info({ userId: user.id }, 'Saving user');
     return super.save(user);
   }
 }

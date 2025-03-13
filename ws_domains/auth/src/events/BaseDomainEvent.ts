@@ -1,4 +1,4 @@
-import { logger } from '@repo-packages/logger';
+import type { Logger } from '@repo-domains/domain-core';
 
 /**
  * Base domain event interface
@@ -6,7 +6,7 @@ import { logger } from '@repo-packages/logger';
 export interface DomainEvent {
   eventName: string;
   occurredAt: Date;
-  publish(): void;
+  publish(logger: Logger): void;
 }
 
 /**
@@ -21,7 +21,7 @@ export abstract class BaseDomainEvent implements DomainEvent {
     this.occurredAt = new Date();
   }
 
-  publish(): void {
+  publish(logger: Logger): void {
     // In a real application, this would publish to an event bus/message broker
     logger.info(
       {

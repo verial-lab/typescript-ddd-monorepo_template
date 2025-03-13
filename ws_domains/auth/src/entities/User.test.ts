@@ -1,3 +1,4 @@
+import { Entity } from '@repo-domains/domain-core';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { User, type UserCreateProps } from './User';
 
@@ -7,6 +8,13 @@ describe('User Entity', () => {
     username: 'testuser',
     passwordHash: 'hashedpassword123',
   };
+
+  beforeEach(() => {
+    // Set up mock IdGenerator
+    Entity.setIdGenerator({
+      generate: () => 'mock-id',
+    });
+  });
 
   it('should create a user with valid props', () => {
     const user = User.create(validUserProps);
@@ -27,34 +35,26 @@ describe('User Entity', () => {
     expect(user.id).toBe(customId);
   });
 
-  it('should deactivate a user', async () => {
+  it('should deactivate a user', () => {
     const user = User.create(validUserProps);
+    const deactivatedUser = user.deactivate();
 
-    // Store the original updatedAt time
-    const beforeUpdate = user.updatedAt;
-
-    // Wait a small amount of time to ensure the timestamp changes
-    await new Promise((resolve) => setTimeout(resolve, 10));
-
-    user.deactivate();
-
-    expect(user.isActive).toBe(false);
-    expect(user.updatedAt.getTime()).toBeGreaterThan(beforeUpdate.getTime());
+    expect(deactivatedUser.isActive).toBe(false);
+    expect(deactivatedUser.id).toBe(user.id);
+    expect(deactivatedUser.email).toBe(user.email);
+    expect(deactivatedUser.username).toBe(user.username);
+    expect(deactivatedUser.passwordHash).toBe(user.passwordHash);
   });
 
-  it('should activate a user', async () => {
-    const user = User.create(validUserProps);
-    user.deactivate();
+  it('should activate a user', () => {
+    let user = User.create(validUserProps);
+    user = user.deactivate();
+    const activatedUser = user.activate();
 
-    // Store the original updatedAt time
-    const beforeUpdate = user.updatedAt;
-
-    // Wait a small amount of time to ensure the timestamp changes
-    await new Promise((resolve) => setTimeout(resolve, 10));
-
-    user.activate();
-
-    expect(user.isActive).toBe(true);
-    expect(user.updatedAt.getTime()).toBeGreaterThan(beforeUpdate.getTime());
+    expect(activatedUser.isActive).toBe(true);
+    expect(activatedUser.id).toBe(user.id);
+    expect(activatedUser.email).toBe(user.email);
+    expect(activatedUser.username).toBe(user.username);
+    expect(activatedUser.passwordHash).toBe(user.passwordHash);
   });
 });

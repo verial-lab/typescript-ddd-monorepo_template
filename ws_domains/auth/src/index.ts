@@ -16,3 +16,6 @@ export * from './services';
 
 // Domain events
 export * from './events';
+
+// Domain interfaces
+export * from './services/HashService';
