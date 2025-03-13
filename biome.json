@@ -15,7 +15,8 @@
       "**/build/**",
       "**/coverage/**",
       "**/.templates/**",
-      "**/.last-run.json"
+      "**/.last-run.json",
+      "**/.vscode/settings.json"
     ]
   },
   "json": {
