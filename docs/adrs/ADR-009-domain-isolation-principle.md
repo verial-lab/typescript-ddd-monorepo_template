@@ -38,9 +38,11 @@ We will enforce strict isolation of domain workspaces (`ws_domains/*`) with the 
 Domain workspaces must strive for zero external dependencies in their package.json:
 
 - TypeScript/JavaScript language features only
-- Core domain interfaces (`@repo-packages/domain-core`)
+- Core domain interfaces (`@repo-domains/domain-core`)
 - Essential type definitions
 - Test utilities (dev dependencies only)
+
+This principle applies to domain-core itself, which resides in ws_domains/ to enforce the same dependency constraints. As the foundational domain package that defines core interfaces and patterns, it must remain pure and dependency-free. Any required infrastructure functionality (like UUID generation or validation) should be moved to dedicated infrastructure packages.
 
 When external functionality is required:
 
@@ -174,13 +176,27 @@ Domain tests should be:
    - Clear separation of dev dependencies
    - No framework-specific dependencies
 
-Example package.json for a domain workspace:
+Example package.json files:
+
+For a typical domain workspace:
 
 ```json
 {
   "dependencies": {
-    "@repo-packages/domain-core": "workspace:*"
+    "@repo-domains/domain-core": "workspace:*"
   },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
+  }
+}
+```
+
+For the domain-core package itself:
+
+```json
+{
+  "name": "@repo-domains/domain-core",
   "devDependencies": {
     "typescript": "^5.0.0",
     "vitest": "^1.0.0"
