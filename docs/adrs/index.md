@@ -14,11 +14,12 @@ This directory contains Architectural Decision Records (ADRs) that document sign
 
 ### Development Configuration
 
-- [ADR-001: TypeScript Module Resolution Strategy](./ADR-001-typescript-module-resolution-strategy.md)
+- [ADR-001: TypeScript Configuration Strategy](./ADR-001-typescript-module-resolution-strategy.md)
 - [ADR-002: Code Organization and Style Guide Implementation](./ADR-002-code-organization-and-style-guide.md)
 - [ADR-003: Build System Configuration with tsup](./ADR-003-build-system-configuration-with-tsup.md)
 - [ADR-008: Version Control and Commit Strategy](./ADR-008-version-control-and-commit-strategy.md)
 - [ADR-011: JavaScript Helper Scripts for Cross-Platform Support](./ADR-011-javascript-helper-scripts.md)
+- [ADR-013: Monorepo Package Imports Strategy](./ADR-013-monorepo-package-imports.md)
 
 ### Architecture Decisions
 
