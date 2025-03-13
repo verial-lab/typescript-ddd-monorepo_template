@@ -9,7 +9,7 @@ A comprehensive monorepo template optimized for TypeScript, Domain-Driven Design
 - 🧹 **Biome** for linting and formatting (replacing ESLint & Prettier)
 - 📘 **TypeScript** for type safety
 - 📦 **tsup** for efficient bundling
-- 🏷️ **Changesets** for versioning and changelogs
+- 🤝 **Conventional Commits** for clear communication and versioning
 - 🐳 **Docker** support for containerization
 - 🎭 **Playwright** for end-to-end testing
 - 🧪 **Vitest** for unit and integration testing
@@ -41,17 +41,12 @@ monorepo-root/
 ├── ws_templates/     # Prebuilt scaffolding templates
 ├── docs/             # Documentation
 │   ├── index.md      # Main table of contents
-│   ├── development/  # Development workflows, tools, and practices
+│   ├── development/  # Development workflows
 │   ├── technical/    # Technical documentation
 │   ├── guides/       # Step-by-step guides
-│   └── adrs/         # Architectural Decision Records
-├── .github/          # GitHub workflows and templates
-├── .husky/           # Git hooks for code quality
-├── .changeset/       # Changesets for versioning
-├── .vscode/          # VS Code configurations
-├── .cursor/          # Cursor IDE configurations and rules
-├── pnpm-workspace.yaml
-└── package.json
+│   ├── adrs/         # Architectural Decision Records
+│   └── roadmap/      # Strategic roadmap & evolution
+└── ... other config files
 ```
 
 ## Getting Started
@@ -91,31 +86,41 @@ pnpm lint
 pnpm format
 ```
 
-### Versioning and Publishing
-
-This template uses Changesets for versioning and publishing:
-
-```bash
-# Create a new changeset
-pnpm changeset
-
-# Version packages based on changesets
-pnpm version-packages
-
-# Publish packages
-pnpm release
-```
-
 ## Documentation
 
-Comprehensive documentation is available in the [docs](./docs/index.md) directory. The documentation is organized into a hierarchical table of contents structure:
+Our documentation is organized into a comprehensive, hierarchical structure designed for clarity and ease of use:
 
-- [**Development Documentation**](./docs/development/index.md) - Development workflows, tools, and practices
-- [**Technical Documentation**](./docs/technical/index.md) - Architecture and implementation details
-- [**Guides**](./docs/guides/index.md) - Step-by-step guides for common tasks
-- [**Architectural Decision Records**](./docs/adrs/index.md) - Documentation of significant architectural decisions
+### Core Documentation
 
-This documentation structure is designed to be easily navigable and to support future implementation of a documentation UI. For more information, see [ADR-005: Documentation Structure](./docs/adrs/005-documentation-structure.md) and [ADR-006: Documentation Table of Contents Structure](./docs/adrs/006-documentation-table-of-contents.md).
+- [📚 **Documentation Home**](./docs/index.md) - Start here for a complete overview
+- [🛠️ **Development Guide**](./docs/development/index.md) - Development workflows and practices
+- [🏗️ **Technical Reference**](./docs/technical/index.md) - Architecture and implementation details
+- [📖 **User Guides**](./docs/guides/index.md) - Step-by-step guides for common tasks
+
+### Architecture & Evolution
+
+- [📋 **Architectural Decisions**](./docs/adrs/index.md) - Key architectural decisions and their rationale
+  - [ADR-009: Domain Isolation Principle](./docs/adrs/009-domain-isolation-principle.md) - Core DDD principles
+  - [ADR-008: Version Control Strategy](./docs/adrs/008-version-control-and-commit-strategy.md) - Commit and version management
+  - [ADR-005: Documentation Structure](./docs/adrs/005-documentation-structure.md) - Documentation organization
+  - [View all ADRs](./docs/adrs/index.md)
+
+- [🗺️ **Strategic Roadmap**](./docs/roadmap/README.md) - Technical evolution and future directions
+  - [Domain Core & Event Bus](./docs/roadmap/infrastructure/001-domain-core-and-event-bus.md) - Core domain infrastructure
+  - [Reference Module Integration](./docs/roadmap/infrastructure/002-reference-modules-integration.md) - Pattern library development
+  - [Template System](./docs/roadmap/tooling/001-handlebars-template-system.md) - Code generation and scaffolding
+
+### Key Principles
+
+- **Domain Isolation**: Domain modules (`ws_domains/*`) maintain zero external dependencies, ensuring pure business logic that stands the test of time
+- **Clear Boundaries**: Strong separation between domain, application, and infrastructure layers
+- **Developer Experience**: Comprehensive tooling and automation for efficient development
+- **Quality First**: Extensive testing infrastructure and quality assurance tools
+- **Evolution Ready**: Strategic roadmap for continuous improvement and adaptation
+
+## Contributing
+
+Please read our [Contributing Guide](./docs/development/contributing.md) for details on our development process, coding standards, and pull request process.
 
 ## License
 
