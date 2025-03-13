@@ -5,7 +5,9 @@
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
-  "files": ["dist/**"],
+  "files": [
+    "dist/**"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -14,7 +16,11 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
   },
-  "keywords": ["auth", "domain", "ddd"],
+  "keywords": [
+    "auth",
+    "domain",
+    "ddd"
+  ],
   "author": "",
   "license": "MIT",
   "devDependencies": {
@@ -23,6 +29,7 @@
     "@repo-tooling/vitest": "workspace:*"
   },
   "dependencies": {
+    "@repo-packages/domain-core": "workspace:*",
     "@repo-packages/logger": "workspace:*",
     "bcryptjs": "^2.4.3",
     "uuid": "^9.0.1"

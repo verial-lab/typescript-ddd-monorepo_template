@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { User } from './User';
+import { User, type UserCreateProps } from './User';
 
 describe('User Entity', () => {
-  const validUserProps = {
+  const validUserProps: UserCreateProps = {
     email: 'test@example.com',
     username: 'testuser',
     passwordHash: 'hashedpassword123',
@@ -29,8 +29,12 @@ describe('User Entity', () => {
 
   it('should deactivate a user', async () => {
     const user = User.create(validUserProps);
-    const beforeUpdate = new Date(user.updatedAt.getTime() - 1000); // Set to 1 second before
-    user.updatedAt = beforeUpdate;
+
+    // Store the original updatedAt time
+    const beforeUpdate = user.updatedAt;
+
+    // Wait a small amount of time to ensure the timestamp changes
+    await new Promise((resolve) => setTimeout(resolve, 10));
 
     user.deactivate();
 
@@ -41,8 +45,12 @@ describe('User Entity', () => {
   it('should activate a user', async () => {
     const user = User.create(validUserProps);
     user.deactivate();
-    const beforeUpdate = new Date(user.updatedAt.getTime() - 1000); // Set to 1 second before
-    user.updatedAt = beforeUpdate;
+
+    // Store the original updatedAt time
+    const beforeUpdate = user.updatedAt;
+
+    // Wait a small amount of time to ensure the timestamp changes
+    await new Promise((resolve) => setTimeout(resolve, 10));
 
     user.activate();
 

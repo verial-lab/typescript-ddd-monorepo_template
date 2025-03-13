@@ -6,3 +6,4 @@ export * from './Repository';
 export * from './UnitOfWork';
 export * from './Command';
 export * from './Query';
+export * from './BaseEntity';
