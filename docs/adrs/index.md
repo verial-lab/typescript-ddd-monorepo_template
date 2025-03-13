@@ -20,7 +20,7 @@ This directory contains Architectural Decision Records (ADRs) that document sign
 
 ### Architecture Decisions
 
-*No ADRs available yet*
+- [ADR-009: Domain Isolation Principle](./009-domain-isolation-principle.md)
 
 ### Implementation Decisions
 
