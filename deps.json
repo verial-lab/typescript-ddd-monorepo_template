@@ -1,0 +1,6 @@
+{
+  "error": {
+    "code": "ERR_PNPM_MISSING_PACKAGE_NAME",
+    "message": "`pnpm why` requires the package name"
+  }
+}
