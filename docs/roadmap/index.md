@@ -1,55 +1,49 @@
-# Strategic Roadmap & Technical Evolution
+# Roadmap
 
-This directory contains the project's strategic roadmap, technical evolution plans, and architectural initiatives. It serves as a living document of our technical direction and planned improvements.
+This document outlines the planned features, improvements, and initiatives for this project.
 
-## Structure
+## Infrastructure
 
-- `features/` - Strategic feature initiatives and domain evolution
-- `infrastructure/` - Core infrastructure and cross-cutting architectural improvements
-- `tooling/` - Developer experience and automation enhancements
-- `documentation/` - Knowledge base and documentation initiatives
+| Number | Title | Status | Priority | Labels |
+|--------|--------|--------|----------|---------|
+| ROAD-I001 | [Domain Core and Event Bus Implementation](./road-I001-domain-core-and-event-bus.md) | 📋 Planned | 🔥 Critical | infrastructure, cross-cutting |
+| ROAD-I002 | [Reference Modules Integration and Enhancement](./road-I002-reference-modules-integration.md) | 📋 Planned | 🚀 High | domain-evolution, architecture, infrastructure |
+| ROAD-I003 | [CI/CD Pipeline Implementation](./road-I003-ci-cd-pipeline.md) | 📋 Planned | 🔥 Critical | infrastructure, automation |
 
-## Priority Levels
+## Tooling
 
-- 🔥 **Critical** - Core capabilities needed for the strategic technical vision
-- 🚀 **High** - Key enablers for technical excellence
-- 📈 **Medium** - Important improvements for scalability and maintainability
-- 🌱 **Low** - Quality-of-life improvements and technical debt reduction
+| Number | Title | Status | Priority | Labels |
+|--------|--------|--------|----------|---------|
+| ROAD-T001 | [Handlebars Template Generation System](./road-T001-handlebars-template-system.md) | 📋 Planned | 🚀 High | tooling, automation |
+| ROAD-T002 | [Development Environment Automation](./road-T002-development-environment-automation.md) | 📋 Planned | 🔥 Critical | developer-experience, infrastructure, automation |
 
-## Status Tags
+## Adding New Roadmap Items
 
-- 📋 **Planned** - Initiative is defined and ready for implementation
-- 🏗️ **In Progress** - Active development underway
-- ✅ **Completed** - Initiative has been successfully implemented
-- 🔄 **Blocked** - Awaiting dependencies or decisions
-- 📝 **Draft** - Initiative being evaluated and defined
+When adding a new roadmap item:
 
-## Initiative Categories
+1. Create a new file in the appropriate category using the naming convention:
+   - Infrastructure: `road-I###-title-with-hyphens.md`
+   - Tooling: `road-T###-title-with-hyphens.md`
+   - Features: `road-F###-title-with-hyphens.md`
+   - Documentation: `road-D###-title-with-hyphens.md`
 
-- `domain-evolution` - Core domain model and business capability improvements
-- `architecture` - Architectural patterns and system design
-- `infrastructure` - Technical infrastructure and platform capabilities
-- `developer-experience` - Development workflow and tooling improvements
-- `quality` - Testing, monitoring, and quality improvements
-- `documentation` - Technical documentation and knowledge sharing
-- `cross-cutting` - Concerns that span multiple areas
-- `automation` - Process automation and CI/CD improvements
+2. Use the established roadmap item template:
 
-## Contribution Guidelines
+   ```markdown
+   # Title
 
-When adding new initiatives:
+   **Status**: 📋 Planned | 🚧 In Progress | ✅ Completed
+   **Priority**: 🔥 Critical | 🚀 High | 📈 Medium | 📉 Low
+   **Labels**: `category1`, `category2`
 
-1. Use the established template structure
-2. Clearly define success criteria and outcomes
-3. Consider dependencies and implementation order
-4. Link to relevant ADRs or technical documentation
-5. Update status and progress regularly
+   ## Overview
+   ...
+   ```
 
-## Tracking Progress
+3. Update this index file to include the new item in the appropriate section
 
-Progress on initiatives is tracked through:
-
-- Regular status updates in initiative documents
-- Links to implemented PRs and changes
-- References to related ADRs
-- Documentation of completed milestones
+4. Follow the roadmap item guidelines:
+   - Keep items focused and well-scoped
+   - Include clear acceptance criteria
+   - Link to related items and dependencies
+   - Update status as progress is made
