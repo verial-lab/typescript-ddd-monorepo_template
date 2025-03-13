@@ -8,3 +8,5 @@ export * from './Command';
 export * from './Query';
 export * from './BaseEntity';
 export * from './IdGenerator';
+export * from './DomainService';
+export * from './Logger';

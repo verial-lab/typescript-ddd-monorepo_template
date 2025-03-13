@@ -1,5 +1,5 @@
 {
-  "name": "@repo-packages/domain-core",
+  "name": "@repo-domains/domain-core",
   "version": "0.0.1",
   "private": true,
   "main": "./dist/index.js",
@@ -17,9 +17,5 @@
     "tsup": "^8.0.2",
     "typescript": "^5.3.3",
     "vitest": "^1.3.1"
-  },
-  "dependencies": {
-    "uuid": "^9.0.1",
-    "zod": "^3.22.4"
   }
 }

@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import type { IIdGenerator } from './IdGenerator';
 
 // Base interfaces for the Props Pattern
 export type EntityCreateProps = Record<string, unknown>;
@@ -15,9 +15,17 @@ export interface IEntity<T> {
 export abstract class Entity<T> implements IEntity<T> {
   protected readonly _id: string;
   protected readonly _props: T;
+  private static _idGenerator: IIdGenerator;
+
+  public static setIdGenerator(generator: IIdGenerator): void {
+    Entity._idGenerator = generator;
+  }
 
   constructor(props: T, id?: string) {
-    this._id = id || uuidv4();
+    if (!id && !Entity._idGenerator) {
+      throw new Error('IdGenerator not set. Call Entity.setIdGenerator() with an implementation.');
+    }
+    this._id = id || Entity._idGenerator.generate();
     this._props = props;
   }
 

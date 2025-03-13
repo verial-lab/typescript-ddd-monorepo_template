@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { Entity, type EntityCreateProps, type EntityProps, type EntitySystemProps } from './Entity';
 
 // Define test props
@@ -28,9 +28,17 @@ class TestEntity extends Entity<TestEntityProps> {
 }
 
 describe('Entity', () => {
+  beforeEach(() => {
+    // Set up mock IdGenerator
+    Entity.setIdGenerator({
+      generate: () => 'mock-id',
+    });
+  });
+
   it('should create an entity with an ID', () => {
     const entity = new TestEntity({ name: 'Test Entity' });
     expect(entity.id).toBeDefined();
+    expect(entity.id).toBe('mock-id');
     expect(entity.name).toBe('Test Entity');
   });
 
