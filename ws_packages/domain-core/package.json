@@ -6,7 +6,7 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && tsc --emitDeclarationOnly --declaration --outDir dist",
     "dev": "tsup --watch",
     "lint": "biome check .",
     "test": "vitest run",
