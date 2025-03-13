@@ -1,0 +1,12 @@
+# Build outputs
+index.html
+dist/
+build/
+
+# Test results
+test-results/
+playwright-report/
+coverage/
+
+# Generated files
+*.generated.* 
