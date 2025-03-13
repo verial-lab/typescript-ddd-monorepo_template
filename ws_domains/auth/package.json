@@ -1,0 +1,30 @@
+{
+  "name": "@repo-domains/auth",
+  "version": "0.1.0",
+  "description": "Authentication domain for the monorepo",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": ["dist/**"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "keywords": ["auth", "domain", "ddd"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@repo-tooling/tsup": "workspace:*",
+    "@repo-tooling/typescript": "workspace:*",
+    "@repo-tooling/vitest": "workspace:*"
+  },
+  "dependencies": {
+    "@repo-packages/logger": "workspace:*",
+    "bcryptjs": "^2.4.3",
+    "uuid": "^9.0.1"
+  }
+}

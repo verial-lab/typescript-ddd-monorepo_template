@@ -1,0 +1,28 @@
+{
+  "name": "@repo-packages/logger",
+  "version": "0.1.0",
+  "description": "Shared logger for the monorepo",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": ["dist/**"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "keywords": ["logger", "utility"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@repo-tooling/tsup": "workspace:*",
+    "@repo-tooling/typescript": "workspace:*",
+    "@repo-tooling/vitest": "workspace:*"
+  },
+  "dependencies": {
+    "pino": "^8.18.0"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "name": "@repo-infrastructure/supabase",
+  "version": "0.1.0",
+  "description": "Supabase client and utilities for the monorepo",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": ["dist/**"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist",
+    "test": "pnpm build && vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "biome check .",
+    "format": "biome format . --write"
+  },
+  "keywords": ["supabase", "database", "infrastructure"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@repo-tooling/tsup": "workspace:*",
+    "@repo-tooling/typescript": "workspace:*",
+    "@repo-tooling/vitest": "workspace:*",
+    "@biomejs/biome": "1.5.3"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.7"
+  }
+}

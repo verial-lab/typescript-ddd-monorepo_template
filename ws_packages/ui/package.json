@@ -1,0 +1,35 @@
+{
+  "name": "@repo-packages/ui",
+  "version": "0.1.0",
+  "description": "Shared UI component library for the monorepo",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": ["dist/**"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
+  },
+  "keywords": ["ui", "components", "react"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@repo-tooling/tsup": "workspace:*",
+    "@repo-tooling/typescript": "workspace:*",
+    "@repo-tooling/vitest": "workspace:*"
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}
