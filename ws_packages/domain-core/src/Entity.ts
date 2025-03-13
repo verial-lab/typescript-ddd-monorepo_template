@@ -1,13 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 
 // Base interfaces for the Props Pattern
-export interface EntityCreateProps {
-  [key: string]: any;
-}
+export type EntityCreateProps = Record<string, unknown>;
 
-export interface EntitySystemProps {
-  [key: string]: any;
-}
+export type EntitySystemProps = Record<string, unknown>;
 
 export type EntityProps<C extends EntityCreateProps, S extends EntitySystemProps> = C & S;
 

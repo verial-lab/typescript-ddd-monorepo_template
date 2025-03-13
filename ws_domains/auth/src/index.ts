@@ -6,7 +6,7 @@
 export * from './entities';
 
 // Domain value objects
-export * from './value-objects';
+export * from './value-objects/Password';
 
 // Domain repositories
 export * from './repositories';

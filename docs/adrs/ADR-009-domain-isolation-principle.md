@@ -33,14 +33,27 @@ This leads to:
 
 We will enforce strict isolation of domain workspaces (`ws_domains/*`) with the following principles:
 
-### 1. Zero External Dependencies
+### 1. Strict Dependency Management
 
-Domain workspaces should have minimal dependencies, ideally only:
+Domain workspaces must strive for zero external dependencies in their package.json:
 
-- TypeScript/JavaScript language features
+- TypeScript/JavaScript language features only
 - Core domain interfaces (`@repo-packages/domain-core`)
 - Essential type definitions
 - Test utilities (dev dependencies only)
+
+When external functionality is required:
+
+1. Define the interface within the domain
+2. Create a separate infrastructure package
+3. Implement the interface in that package
+4. Use dependency injection to connect implementations
+
+Example:
+
+- IdGenerator interface defined in domain-core
+- Implemented by ws_infrastructure/id-generator package
+- No direct dependency on UUID or similar libraries in domain code
 
 ### 2. Pure Business Logic Focus
 
@@ -66,14 +79,62 @@ Domain code must be:
 
 ### 4. Interface-Based Boundaries
 
-All external interactions must be through:
+Domain packages own and define interfaces that other packages implement:
 
-- Well-defined interfaces
+- Well-defined interfaces for all external functionality
 - Abstract base classes where necessary
-- Port/adapter patterns
-- Clear contracts
+- Port/adapter patterns with domain owning the ports
+- Clear contracts that infrastructure adapters must fulfill
+- Dependency inversion principle: infrastructure depends on domain interfaces
 
-### 5. Testing Approach
+Example:
+
+```typescript
+// Domain defines interface
+interface UserRepository {
+  findById(id: string): Promise<User>;
+  save(user: User): Promise<void>;
+}
+
+// Infrastructure implements interface
+class SupabaseUserRepository implements UserRepository {
+  // Implementation details here
+}
+```
+
+### 5. Interface Definition Responsibility
+
+Domain workspaces are responsible for defining all interfaces that external packages implement:
+
+- Interfaces represent required external capabilities
+- Infrastructure and other packages implement these interfaces
+- Dependencies flow toward the domain, never outward
+- Domain remains pure and implementation-agnostic
+
+Example from our codebase:
+
+```typescript
+// Domain defines the interface (in domain-core)
+export interface IdGenerator {
+  generate(): string;
+}
+
+// Infrastructure implements it (in ws_infrastructure/id-generator)
+export class UuidGenerator implements IdGenerator {
+  generate(): string {
+    return uuid();
+  }
+}
+```
+
+This approach ensures:
+
+- Domain dictates its requirements
+- Easy to swap implementations
+- Clear separation of concerns
+- True domain isolation
+
+### 6. Testing Approach
 
 Domain tests should be:
 
@@ -108,9 +169,24 @@ Domain tests should be:
 ## Implementation Notes
 
 1. Package.json Requirements:
-   - Minimal dependencies section
+   - Zero dependencies whenever possible
+   - Interface-based approach for required functionality
    - Clear separation of dev dependencies
    - No framework-specific dependencies
+
+Example package.json for a domain workspace:
+
+```json
+{
+  "dependencies": {
+    "@repo-packages/domain-core": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
+  }
+}
+```
 
 2. Code Organization:
    - Clear folder structure
@@ -134,10 +210,13 @@ Domain tests should be:
 
 When working in domain workspaces:
 
+- [ ] Package.json contains zero/minimal dependencies
 - [ ] No framework imports
 - [ ] No infrastructure dependencies
 - [ ] Pure business logic only
-- [ ] Interface-based external interactions
+- [ ] Domain owns and defines interfaces
+- [ ] Required external functionality is interface-based
+- [ ] Infrastructure implements domain interfaces
 - [ ] Framework-independent tests
 - [ ] Clear contract definitions
 - [ ] Documented abstractions

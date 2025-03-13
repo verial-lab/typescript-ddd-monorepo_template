@@ -1,5 +1,8 @@
 import { BaseDomainEvent } from './BaseDomainEvent';
 
+/**
+ * User authenticated event
+ */
 export class UserAuthenticatedEvent extends BaseDomainEvent {
   userId: string;
 

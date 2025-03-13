@@ -142,12 +142,37 @@ importers:
 
   ws_domains/auth:
     dependencies:
+      '@repo-packages/domain-core':
+        specifier: workspace:*
+        version: link:../../ws_packages/domain-core
       '@repo-packages/logger':
         specifier: workspace:*
         version: link:../../ws_packages/logger
       bcryptjs:
         specifier: ^2.4.3
         version: 2.4.3
+      uuid:
+        specifier: ^9.0.1
+        version: 9.0.1
+    devDependencies:
+      '@repo-tooling/tsup':
+        specifier: workspace:*
+        version: link:../../ws_tooling/tsup
+      '@repo-tooling/typescript':
+        specifier: workspace:*
+        version: link:../../ws_tooling/typescript
+      '@repo-tooling/vitest':
+        specifier: workspace:*
+        version: link:../../ws_tooling/vitest
+
+  ws_infrastructure/id-generator:
+    dependencies:
+      '@repo-packages/domain-core':
+        specifier: workspace:*
+        version: link:../../ws_packages/domain-core
+      '@repo-packages/logger':
+        specifier: workspace:*
+        version: link:../../ws_packages/logger
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
