@@ -1,19 +1,10 @@
 {
   "extends": "@repo-tooling/typescript/node.json",
   "compilerOptions": {
-    "baseUrl": ".",
     "rootDir": "./src",
     "outDir": "./dist",
-    "composite": true,
-    "paths": {
-      "@repo-packages/*": ["../../ws_packages/*/src"]
-    }
+    "composite": true
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.json"],
-  "exclude": ["node_modules", "dist"],
-  "references": [
-    {
-      "path": "../../ws_packages/logger"
-    }
-  ]
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
 }

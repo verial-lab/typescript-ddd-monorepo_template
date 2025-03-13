@@ -1,5 +1,5 @@
 {
-  "extends": "../../ws_tooling/tsconfig/node.json",
+  "extends": "../../ws_tooling/tsconfig/base.json",
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",
