@@ -6,17 +6,18 @@ Accepted
 
 ## Context
 
-Our monorepo uses `tsup` as the build tool for TypeScript packages. tsup is a wrapper around esbuild and TypeScript that simplifies the build process. However, we encountered issues with the default configuration when trying to follow our style guide for code organization.
+Our monorepo uses `tsup` as the build tool for TypeScript packages. tsup is a wrapper around esbuild and TypeScript that simplifies the build process. Combined with our bundler module resolution strategy (see [ADR-001](./ADR-001-typescript-module-resolution-strategy.md)), it provides a flexible and efficient build system.
 
-The key challenges were:
+The key aspects are:
 
 1. Generating both CommonJS and ESM outputs
 2. Proper type declaration file generation
-3. Compatibility with our code organization style
+3. Full compatibility with our code organization style
+4. Support for both browser and Node.js packages
 
 ## Decision
 
-We decided to maintain the existing tsup configuration but adapt our code organization to work with it. The tsup configuration is centralized in `ws_tooling/tsup.config.ts` and includes:
+We maintain a flexible tsup configuration that works well with our bundler module resolution. The base configuration is centralized in `ws_tooling/tsup.config.ts`:
 
 ```typescript
 defineConfig({
@@ -28,20 +29,26 @@ defineConfig({
 })
 ```
 
-This configuration:
+This configuration provides:
 
-- Uses `src/index.ts` as the entry point for all packages
-- Generates both CommonJS and ESM outputs
-- Generates TypeScript declaration files
-- Includes source maps
-- Cleans the output directory before building
+- Flexible entry points (defaulting to src/index.ts)
+- Both CommonJS and ESM outputs
+- TypeScript declaration files (can be disabled if needed)
+- Source maps for debugging
+- Clean builds
 
-We found that this configuration works well when:
+The configuration works well with our code organization because:
 
-1. All code is in the index.ts file (as in the logger package)
-2. Code is split into multiple files but with careful imports (as in the Express app)
+1. Bundler module resolution allows proper code splitting
+2. No need for explicit file extensions in imports
+3. Full support for our style guide's index.ts pattern
+4. Compatible with both monorepo-internal and external dependencies
 
-We attempted to modify the TypeScript configuration to better support our style guide, but encountered limitations that prevented full adherence (see ADR-001).
+For packages with special needs:
+
+- Type declarations can be handled by tsc instead of tsup
+- Entry points can be customized
+- Output formats can be adjusted
 
 ## Consequences
 
@@ -49,21 +56,26 @@ We attempted to modify the TypeScript configuration to better support our style 
 
 - Consistent build process across all packages
 - Support for both CommonJS and ESM module formats
-- Proper TypeScript declaration file generation
+- Flexible type declaration generation
 - Fast builds with esbuild
+- Full support for code organization style guide
+- Works well with bundler module resolution
+- Adaptable to package-specific needs
 
 ### Negative
 
-- Limited flexibility for code organization
-- Some packages cannot fully adhere to the style guide
-- Technical limitations in the build process
+- May need package-specific tsup configuration
+- Type declaration generation can be tricky in some cases
+- Requires understanding of module resolution modes
 
 ### Neutral
 
-- Need to balance build system requirements with code organization preferences
-- Developers need to understand the build system's expectations and limitations
+- Need to choose between tsup and tsc for type declarations
+- Different packages may need different build configurations
+- Developers need to understand the relationship between TypeScript configuration and build output
 
 ## Related Decisions
 
-- [ADR-001: TypeScript Module Resolution Strategy](./001-typescript-module-resolution-strategy.md)
-- [ADR-002: Code Organization and Style Guide Implementation](./002-code-organization-and-style-guide.md)
+- [ADR-001: TypeScript Module Resolution Strategy](./ADR-001-typescript-module-resolution-strategy.md)
+- [ADR-002: Code Organization and Style Guide Implementation](./ADR-002-code-organization-and-style-guide.md)
+- [ADR-013: TypeScript Module Resolution - Bundler Mode](./ADR-013-typescript-module-resolution-bundler.md)

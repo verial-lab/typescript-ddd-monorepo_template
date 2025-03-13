@@ -1,4 +1,4 @@
-# ADR-001: TypeScript Configuration Strategy (v1.0)
+# ADR-001: TypeScript Configuration Strategy (v2.0)
 
 ## Status
 
@@ -10,15 +10,16 @@ In our TypeScript monorepo, we need a comprehensive approach to TypeScript confi
 
 ### Module Resolution
 
-We encountered issues with module resolution when trying to split code into multiple files within packages. The root cause was the use of `NodeNext` module resolution in the base TypeScript configuration, which requires explicit file extensions in imports.
+We encountered issues with module resolution when trying to split code into multiple files within packages. Initially, we used `NodeNext` module resolution which required explicit file extensions in imports, making the code more verbose and error-prone.
 
 The monorepo has the following structure:
 
-- Base TypeScript configuration in `ws_tooling/tsconfig/node.json` using `"module": "NodeNext"` and `"moduleResolution": "NodeNext"`
-- Individual packages extending this base configuration
+- Base TypeScript configuration in `ws_tooling/tsconfig/base.json` using `"module": "esnext"` and `"moduleResolution": "bundler"`
+- Node-specific configuration in `ws_tooling/tsconfig/node.json` for packages that require Node.js module resolution
+- Individual packages extending either base.json or node.json as needed
 - Build system using `tsup` to generate both CommonJS and ESM outputs
 
-When following our style guide, which states that index.ts files should only be used for exports and logic should be in separate files, we encountered TypeScript errors related to module resolution.
+This structure allows us to follow our style guide, which states that index.ts files should only be used for exports and logic should be in separate files. The bundler module resolution mode enables this by removing the need for explicit file extensions in imports.
 
 ### Type Safety
 
@@ -33,38 +34,38 @@ The specific instances were found in:
 
 ### 1. Module Resolution Strategy
 
-We attempted several approaches to resolve the module resolution issues:
+After exploring several approaches including Node, NodeNext, and explicit file extensions, we found that the bundler module resolution mode best suits our needs:
 
-1. Overriding the module resolution strategy in individual package tsconfig.json files to use the older `Node` resolution instead of `NodeNext`:
-
-   ```json
-   "moduleResolution": "Node"
-   ```
-
-2. Trying to use explicit file extensions in imports:
-
-   ```typescript
-   import { ... } from './Logger.js';
-   ```
-
-3. Setting the package type to "module" in package.json:
+1. Base configuration in tsconfig/base.json:
 
    ```json
-   "type": "module"
+   {
+     "module": "esnext",
+     "moduleResolution": "bundler",
+     "target": "ES2020",
+     "lib": ["dom", "dom.iterable", "esnext"]
+   }
    ```
 
-4. Overriding both module and moduleResolution settings:
+2. Node-specific configuration in tsconfig/node.json for packages that need it:
 
    ```json
-   "module": "Node16",
-   "moduleResolution": "Node16"
+   {
+     "extends": "./base.json",
+     "module": "NodeNext",
+     "moduleResolution": "NodeNext"
+   }
    ```
 
-None of these approaches fully resolved the issues with the build system. After multiple attempts, we decided to:
+3. Package-level configuration:
+   - Most packages extend base.json for bundler resolution
+   - Node-specific packages extend node.json when needed
 
-1. Keep all code in index.ts files for packages where splitting caused build issues (e.g., logger)
-2. Organize the code in index.ts with clear sections for types and implementation
-3. Split code into multiple files where possible (e.g., Express app)
+This approach allows us to:
+
+1. Split code into multiple files without explicit extensions
+2. Follow our style guide for index.ts files
+3. Support both browser and Node.js packages
 
 ### 2. Type Safety Configuration
 
@@ -90,23 +91,19 @@ For build configuration, we will:
 
 ### Positive
 
-- Build system works reliably
-- Code organization is improved where possible
-- Clear sections in index.ts files improve readability
-- Improved type safety throughout the codebase
-- Earlier detection of potential errors at compile time rather than runtime
-- Better IDE support with more accurate autocompletion and type checking
-- Clearer interfaces and contracts between components
-- Reduced likelihood of runtime errors related to type mismatches
+- Full adherence to style guide possible for all packages
+- Consistent code organization across the monorepo
+- No need for explicit file extensions in imports
+- Better IDE support with simpler imports
+- Improved development experience
+- Works well with modern bundlers
+- Supports both browser and Node.js packages
 
 ### Negative
 
-- Unable to fully adhere to the style guide for all packages
-- Inconsistent code organization across the monorepo
-- Technical limitations prevent ideal code structure
-- May require more explicit type declarations and type assertions
-- Could increase development time for new features initially
-- Might require refactoring of existing code to comply with stricter type checking
+- Diverges from Node.js's native ESM resolution
+- May require additional bundler configuration in some cases
+- Some packages need to choose between base.json and node.json
 
 ### Neutral
 
@@ -141,4 +138,5 @@ For build configuration, we will:
 
 ## Version History
 
-- v1.0 (Current): Initial consolidated TypeScript configuration strategy
+- v2.0 (Current): Bundler module resolution strategy
+- v1.0: Initial consolidated TypeScript configuration strategy
