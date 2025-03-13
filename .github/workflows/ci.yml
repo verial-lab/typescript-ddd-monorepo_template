@@ -49,8 +49,42 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-turbo-
 
+      - name: Verify pnpm lockfile
+        run: |
+          if [ ! -f "pnpm-lock.yaml" ]; then
+            echo "::error::pnpm-lock.yaml is missing"
+            exit 1
+          fi
+          # Verify lockfile is valid
+          pnpm install --frozen-lockfile --lockfile-only || {
+            echo "::warning::Lockfile verification failed, attempting to regenerate"
+            rm -f pnpm-lock.yaml
+            pnpm install
+            echo "::error::Lockfile was invalid and has been regenerated. Please commit the new pnpm-lock.yaml"
+            exit 1
+          }
+
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: |
+          # Retry logic for pnpm install
+          max_attempts=3
+          attempt=1
+          while [ $attempt -le $max_attempts ]; do
+            echo "::group::Install attempt $attempt of $max_attempts"
+            if pnpm install --frozen-lockfile; then
+              echo "::endgroup::"
+              exit 0
+            fi
+            echo "::endgroup::"
+            echo "::warning::Install attempt $attempt failed"
+            attempt=$((attempt + 1))
+            if [ $attempt -le $max_attempts ]; then
+              echo "Waiting 10 seconds before retry..."
+              sleep 10
+            fi
+          done
+          echo "::error::All install attempts failed"
+          exit 1
 
       - name: Upload workspace
         uses: actions/upload-artifact@v4
