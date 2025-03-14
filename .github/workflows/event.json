@@ -1,0 +1,9 @@
+{
+  "push": {
+    "head_commit": {
+      "id": "1234567890abcdef1234567890abcdef12345678",
+      "message": "Local CI test"
+    },
+    "ref": "refs/heads/main"
+  }
+}

@@ -11,6 +11,148 @@ env:
   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
 jobs:
+  verify:
+    name: Verify Dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.14.0"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.14.2
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      # Use GitHub Actions cache if not running locally
+      - name: Setup pnpm cache (GitHub)
+        if: ${{ !env.ACT }}
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      # Use local filesystem cache if running with act
+      - name: Setup pnpm cache (Local)
+        if: ${{ env.ACT }}
+        shell: bash
+        run: |
+          CACHE_DIR="$HOME/.cache/pnpm-store"
+          mkdir -p "$CACHE_DIR"
+          if [ -d "$CACHE_DIR" ]; then
+            echo "Using local pnpm cache dir: $CACHE_DIR"
+            cp -R "$CACHE_DIR/." "$STORE_PATH/" 2>/dev/null || true
+          fi
+
+      - name: Verify pnpm lockfile
+        run: |
+          if [ ! -f "pnpm-lock.yaml" ]; then
+            echo "::error::pnpm-lock.yaml is missing"
+            exit 1
+          fi
+          # Verify lockfile is valid
+          pnpm install --frozen-lockfile --lockfile-only || {
+            echo "::warning::Lockfile verification failed, attempting to regenerate"
+            rm -f pnpm-lock.yaml
+            pnpm install
+            echo "::error::Lockfile was invalid and has been regenerated. Please commit the new pnpm-lock.yaml"
+            exit 1
+          }
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check for duplicate dependencies
+        run: |
+          # Skip tooling packages as they don't produce build outputs
+          pnpm dedupe --check || {
+            echo "::warning::Found duplicate dependencies, but ignoring tooling package warnings"
+            # Check if there are any non-tooling package warnings
+            if pnpm dedupe --check 2>&1 | grep -v "@repo-tooling/" > /dev/null; then
+              exit 1
+            fi
+            exit 0
+          }
+
+      # Save local caches after the job
+      - name: Save pnpm cache (Local)
+        if: ${{ env.ACT }}
+        shell: bash
+        run: |
+          CACHE_DIR="$HOME/.cache/pnpm-store"
+          mkdir -p "$CACHE_DIR"
+          cp -R "$STORE_PATH/." "$CACHE_DIR/" 2>/dev/null || true
+
+  typecheck:
+    name: Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.14.0"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.14.2
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      # Use GitHub Actions cache if not running locally
+      - name: Setup pnpm cache (GitHub)
+        if: ${{ !env.ACT }}
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      # Use local filesystem cache if running with act
+      - name: Setup pnpm cache (Local)
+        if: ${{ env.ACT }}
+        shell: bash
+        run: |
+          CACHE_DIR="$HOME/.cache/pnpm-store"
+          mkdir -p "$CACHE_DIR"
+          if [ -d "$CACHE_DIR" ]; then
+            echo "Using local pnpm cache dir: $CACHE_DIR"
+            cp -R "$CACHE_DIR/." "$STORE_PATH/" 2>/dev/null || true
+          fi
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Type check
+        run: pnpm typecheck
+
+      # Save local caches after the job
+      - name: Save pnpm cache (Local)
+        if: ${{ env.ACT }}
+        shell: bash
+        run: |
+          CACHE_DIR="$HOME/.cache/pnpm-store"
+          mkdir -p "$CACHE_DIR"
+          cp -R "$STORE_PATH/." "$CACHE_DIR/" 2>/dev/null || true
+
   setup:
     name: Setup
     runs-on: ubuntu-latest
@@ -24,16 +166,18 @@ jobs:
           node-version: "22.14.0"
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v4
         with:
-          version: 8
+          version: 9.14.2
 
       - name: Get pnpm store directory
         shell: bash
         run: |
           echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
-      - name: Setup pnpm cache
+      # Use GitHub Actions cache if not running locally
+      - name: Setup pnpm cache (GitHub)
+        if: ${{ !env.ACT }}
         uses: actions/cache@v3
         with:
           path: ${{ env.STORE_PATH }}
@@ -41,13 +185,39 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
-      - name: Setup Turborepo cache
+      # Use local filesystem cache if running with act
+      - name: Setup pnpm cache (Local)
+        if: ${{ env.ACT }}
+        shell: bash
+        run: |
+          CACHE_DIR="$HOME/.cache/pnpm-store"
+          mkdir -p "$CACHE_DIR"
+          if [ -d "$CACHE_DIR" ]; then
+            echo "Using local pnpm cache dir: $CACHE_DIR"
+            cp -R "$CACHE_DIR/." "$STORE_PATH/" 2>/dev/null || true
+          fi
+
+      # Use GitHub Actions cache if not running locally
+      - name: Setup Turborepo cache (GitHub)
+        if: ${{ !env.ACT }}
         uses: actions/cache@v3
         with:
           path: .turbo
           key: ${{ runner.os }}-turbo-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-turbo-
+
+      # Use local filesystem cache if running with act
+      - name: Setup Turborepo cache (Local)
+        if: ${{ env.ACT }}
+        shell: bash
+        run: |
+          CACHE_DIR="$HOME/.cache/turborepo"
+          mkdir -p "$CACHE_DIR"
+          if [ -d "$CACHE_DIR" ]; then
+            echo "Using local turborepo cache dir: $CACHE_DIR"
+            cp -R "$CACHE_DIR/." ".turbo/" 2>/dev/null || true
+          fi
 
       - name: Verify pnpm lockfile
         run: |
@@ -86,7 +256,25 @@ jobs:
           echo "::error::All install attempts failed"
           exit 1
 
+      # Save local caches after the job
+      - name: Save pnpm cache (Local)
+        if: ${{ env.ACT }}
+        shell: bash
+        run: |
+          CACHE_DIR="$HOME/.cache/pnpm-store"
+          mkdir -p "$CACHE_DIR"
+          cp -R "$STORE_PATH/." "$CACHE_DIR/" 2>/dev/null || true
+
+      - name: Save Turborepo cache (Local)
+        if: ${{ env.ACT }}
+        shell: bash
+        run: |
+          CACHE_DIR="$HOME/.cache/turborepo"
+          mkdir -p "$CACHE_DIR"
+          cp -R ".turbo/." "$CACHE_DIR/" 2>/dev/null || true
+
       - name: Upload workspace
+        if: ${{ !env.ACT }}
         uses: actions/upload-artifact@v4
         with:
           name: workspace
@@ -101,9 +289,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download workspace
+        if: ${{ !env.ACT }}
         uses: actions/download-artifact@v3
         with:
           name: workspace
+
+      - name: Checkout
+        if: ${{ env.ACT }}
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -111,22 +304,36 @@ jobs:
           node-version: "22.14.0"
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v4
         with:
-          version: 8
+          version: 9.14.2
 
       - name: Get pnpm store directory
         shell: bash
         run: |
           echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
-      - name: Setup pnpm cache
+      # Use GitHub Actions cache if not running locally
+      - name: Setup pnpm cache (GitHub)
+        if: ${{ !env.ACT }}
         uses: actions/cache@v3
         with:
           path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
+
+      # Use local filesystem cache if running with act
+      - name: Setup pnpm cache (Local)
+        if: ${{ env.ACT }}
+        shell: bash
+        run: |
+          CACHE_DIR="$HOME/.cache/pnpm-store"
+          mkdir -p "$CACHE_DIR"
+          if [ -d "$CACHE_DIR" ]; then
+            echo "Using local pnpm cache dir: $CACHE_DIR"
+            cp -R "$CACHE_DIR/." "$STORE_PATH/" 2>/dev/null || true
+          fi
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -134,14 +341,28 @@ jobs:
       - name: Lint
         run: pnpm lint
 
+      # Save local caches after the job
+      - name: Save pnpm cache (Local)
+        if: ${{ env.ACT }}
+        shell: bash
+        run: |
+          CACHE_DIR="$HOME/.cache/pnpm-store"
+          mkdir -p "$CACHE_DIR"
+          cp -R "$STORE_PATH/." "$CACHE_DIR/" 2>/dev/null || true
+
   build:
     needs: setup
     runs-on: ubuntu-latest
     steps:
       - name: Download workspace
+        if: ${{ !env.ACT }}
         uses: actions/download-artifact@v3
         with:
           name: workspace
+
+      - name: Checkout
+        if: ${{ env.ACT }}
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -149,16 +370,18 @@ jobs:
           node-version: "22.14.0"
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v4
         with:
-          version: 8
+          version: 9.14.2
 
       - name: Get pnpm store directory
         shell: bash
         run: |
           echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
-      - name: Setup pnpm cache
+      # Use GitHub Actions cache if not running locally
+      - name: Setup pnpm cache (GitHub)
+        if: ${{ !env.ACT }}
         uses: actions/cache@v3
         with:
           path: ${{ env.STORE_PATH }}
@@ -166,7 +389,21 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
-      - name: Setup Turborepo cache
+      # Use local filesystem cache if running with act
+      - name: Setup pnpm cache (Local)
+        if: ${{ env.ACT }}
+        shell: bash
+        run: |
+          CACHE_DIR="$HOME/.cache/pnpm-store"
+          mkdir -p "$CACHE_DIR"
+          if [ -d "$CACHE_DIR" ]; then
+            echo "Using local pnpm cache dir: $CACHE_DIR"
+            cp -R "$CACHE_DIR/." "$STORE_PATH/" 2>/dev/null || true
+          fi
+
+      # Use GitHub Actions cache if not running locally
+      - name: Setup Turborepo cache (GitHub)
+        if: ${{ !env.ACT }}
         uses: actions/cache@v3
         with:
           path: .turbo
@@ -174,13 +411,43 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-turbo-
 
+      # Use local filesystem cache if running with act
+      - name: Setup Turborepo cache (Local)
+        if: ${{ env.ACT }}
+        shell: bash
+        run: |
+          CACHE_DIR="$HOME/.cache/turborepo"
+          mkdir -p "$CACHE_DIR"
+          if [ -d "$CACHE_DIR" ]; then
+            echo "Using local turborepo cache dir: $CACHE_DIR"
+            cp -R "$CACHE_DIR/." ".turbo/" 2>/dev/null || true
+          fi
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Build
         run: pnpm build
 
+      # Save local caches after the job
+      - name: Save pnpm cache (Local)
+        if: ${{ env.ACT }}
+        shell: bash
+        run: |
+          CACHE_DIR="$HOME/.cache/pnpm-store"
+          mkdir -p "$CACHE_DIR"
+          cp -R "$STORE_PATH/." "$CACHE_DIR/" 2>/dev/null || true
+
+      - name: Save Turborepo cache (Local)
+        if: ${{ env.ACT }}
+        shell: bash
+        run: |
+          CACHE_DIR="$HOME/.cache/turborepo"
+          mkdir -p "$CACHE_DIR"
+          cp -R ".turbo/." "$CACHE_DIR/" 2>/dev/null || true
+
       - name: Upload build artifacts
+        if: ${{ !env.ACT }}
         uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
@@ -194,14 +461,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download workspace
+        if: ${{ !env.ACT }}
         uses: actions/download-artifact@v3
         with:
           name: workspace
 
       - name: Download build artifacts
+        if: ${{ !env.ACT }}
         uses: actions/download-artifact@v3
         with:
           name: build-artifacts
+
+      - name: Checkout
+        if: ${{ env.ACT }}
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -209,22 +482,36 @@ jobs:
           node-version: "22.14.0"
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v4
         with:
-          version: 8
+          version: 9.14.2
 
       - name: Get pnpm store directory
         shell: bash
         run: |
           echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
-      - name: Setup pnpm cache
+      # Use GitHub Actions cache if not running locally
+      - name: Setup pnpm cache (GitHub)
+        if: ${{ !env.ACT }}
         uses: actions/cache@v3
         with:
           path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
+
+      # Use local filesystem cache if running with act
+      - name: Setup pnpm cache (Local)
+        if: ${{ env.ACT }}
+        shell: bash
+        run: |
+          CACHE_DIR="$HOME/.cache/pnpm-store"
+          mkdir -p "$CACHE_DIR"
+          if [ -d "$CACHE_DIR" ]; then
+            echo "Using local pnpm cache dir: $CACHE_DIR"
+            cp -R "$CACHE_DIR/." "$STORE_PATH/" 2>/dev/null || true
+          fi
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -232,19 +519,34 @@ jobs:
       - name: Run unit tests
         run: pnpm test:unit
 
+      # Save local caches after the job
+      - name: Save pnpm cache (Local)
+        if: ${{ env.ACT }}
+        shell: bash
+        run: |
+          CACHE_DIR="$HOME/.cache/pnpm-store"
+          mkdir -p "$CACHE_DIR"
+          cp -R "$STORE_PATH/." "$CACHE_DIR/" 2>/dev/null || true
+
   test-e2e:
     needs: build
     runs-on: ubuntu-latest
     steps:
       - name: Download workspace
+        if: ${{ !env.ACT }}
         uses: actions/download-artifact@v3
         with:
           name: workspace
 
       - name: Download build artifacts
+        if: ${{ !env.ACT }}
         uses: actions/download-artifact@v3
         with:
           name: build-artifacts
+
+      - name: Checkout
+        if: ${{ env.ACT }}
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -252,22 +554,36 @@ jobs:
           node-version: "22.14.0"
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v4
         with:
-          version: 8
+          version: 9.14.2
 
       - name: Get pnpm store directory
         shell: bash
         run: |
           echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
-      - name: Setup pnpm cache
+      # Use GitHub Actions cache if not running locally
+      - name: Setup pnpm cache (GitHub)
+        if: ${{ !env.ACT }}
         uses: actions/cache@v3
         with:
           path: ${{ env.STORE_PATH }}
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
+
+      # Use local filesystem cache if running with act
+      - name: Setup pnpm cache (Local)
+        if: ${{ env.ACT }}
+        shell: bash
+        run: |
+          CACHE_DIR="$HOME/.cache/pnpm-store"
+          mkdir -p "$CACHE_DIR"
+          if [ -d "$CACHE_DIR" ]; then
+            echo "Using local pnpm cache dir: $CACHE_DIR"
+            cp -R "$CACHE_DIR/." "$STORE_PATH/" 2>/dev/null || true
+          fi
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -277,3 +593,12 @@ jobs:
 
       - name: Run E2E tests
         run: pnpm test:e2e
+
+      # Save local caches after the job
+      - name: Save pnpm cache (Local)
+        if: ${{ env.ACT }}
+        shell: bash
+        run: |
+          CACHE_DIR="$HOME/.cache/pnpm-store"
+          mkdir -p "$CACHE_DIR"
+          cp -R "$STORE_PATH/." "$CACHE_DIR/" 2>/dev/null || true
