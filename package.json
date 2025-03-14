@@ -24,10 +24,7 @@
     "graph": "pnpm build && node ws_tooling/dep-graph/dist/cli.js"
   },
   "lint-staged": {
-    "*": [
-      "biome check --write",
-      "biome format --write"
-    ]
+    "*.{js,jsx,ts,tsx,json,md}": ["biome check --write", "biome format --write"]
   },
   "keywords": [
     "typescript",

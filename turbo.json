@@ -13,7 +13,8 @@
       "inputs": [
         "src/**/*.{js,jsx,ts,tsx}",
         "test/**/*.{js,jsx,ts,tsx}",
-        "tests/**/*.{js,jsx,ts,tsx}",
+        "package.json",
+        "tsconfig.json",
         "vitest.config.ts"
       ]
     },
@@ -22,7 +23,9 @@
       "outputs": ["playwright-report/**", "test-results/**"],
       "inputs": [
         "src/**/*.{js,jsx,ts,tsx}",
-        "tests/e2e/**/*.{js,jsx,ts,tsx}",
+        "test/**/*.{js,jsx,ts,tsx}",
+        "package.json",
+        "tsconfig.json",
         "playwright.config.ts"
       ]
     },
@@ -32,12 +35,20 @@
     "format": {
       "outputs": []
     },
+    "format:check": {
+      "outputs": []
+    },
     "dev": {
       "cache": false,
       "persistent": true
     },
     "clean": {
       "cache": false
+    },
+    "typecheck": {
+      "dependsOn": ["^build"],
+      "outputs": [],
+      "inputs": ["src/**/*.{js,jsx,ts,tsx}", "package.json", "tsconfig.json"]
     }
   }
 }
