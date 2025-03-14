@@ -164,6 +164,9 @@ importers:
 
   ws_domains/domain-core:
     devDependencies:
+      tsup:
+        specifier: ^8.0.2
+        version: 8.4.0(jiti@2.4.2)(postcss@8.5.3)(typescript@5.8.2)(yaml@2.7.0)
       typescript:
         specifier: ^5.3.3
         version: 5.8.2
@@ -173,38 +176,40 @@ importers:
 
   ws_domains/profile:
     dependencies:
-      '@repo-domains/auth':
-        specifier: workspace:*
-        version: link:../auth
       '@repo-domains/domain-core':
         specifier: workspace:*
         version: link:../domain-core
     devDependencies:
-      typescript:
-        specifier: ^5.0.0
-        version: 5.8.2
-      vitest:
-        specifier: ^1.0.0
-        version: 1.6.1(@types/node@22.13.10)(jsdom@26.0.0)
-
-  ws_domains/user:
-    dependencies:
-      '@repo-domains/domain-core':
+      '@repo-tooling/tsup':
         specifier: workspace:*
-        version: link:../domain-core
-    devDependencies:
+        version: link:../../ws_tooling/tsup
+      '@repo-tooling/typescript':
+        specifier: workspace:*
+        version: link:../../ws_tooling/typescript
+      '@repo-tooling/vitest':
+        specifier: workspace:*
+        version: link:../../ws_tooling/vitest
+      tsup:
+        specifier: ^8.0.2
+        version: 8.4.0(jiti@2.4.2)(postcss@8.5.3)(typescript@5.8.2)(yaml@2.7.0)
       typescript:
-        specifier: ^5.0.0
+        specifier: ^5.3.3
         version: 5.8.2
       vitest:
-        specifier: ^1.0.0
+        specifier: ^1.2.1
         version: 1.6.1(@types/node@22.13.10)(jsdom@26.0.0)
 
   ws_infrastructure/event-bus:
     dependencies:
+      '@repo-domains/auth':
+        specifier: workspace:*
+        version: link:../../ws_domains/auth
       '@repo-domains/domain-core':
         specifier: workspace:*
         version: link:../../ws_domains/domain-core
+      '@repo-domains/profile':
+        specifier: workspace:*
+        version: link:../../ws_domains/profile
       kafkajs:
         specifier: ^2.2.4
         version: 2.2.4
@@ -212,9 +217,6 @@ importers:
         specifier: ^3.22.4
         version: 3.24.2
     devDependencies:
-      '@repo-domains/user':
-        specifier: workspace:*
-        version: link:../../ws_domains/user
       '@types/node':
         specifier: ^20.11.24
         version: 20.17.24
