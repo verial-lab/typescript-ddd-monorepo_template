@@ -290,7 +290,7 @@ jobs:
     steps:
       - name: Download workspace
         if: ${{ !env.ACT }}
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: workspace
 
@@ -356,7 +356,7 @@ jobs:
     steps:
       - name: Download workspace
         if: ${{ !env.ACT }}
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: workspace
 
@@ -462,13 +462,13 @@ jobs:
     steps:
       - name: Download workspace
         if: ${{ !env.ACT }}
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: workspace
 
       - name: Download build artifacts
         if: ${{ !env.ACT }}
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: build-artifacts
 
@@ -534,13 +534,13 @@ jobs:
     steps:
       - name: Download workspace
         if: ${{ !env.ACT }}
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: workspace
 
       - name: Download build artifacts
         if: ${{ !env.ACT }}
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: build-artifacts
 
