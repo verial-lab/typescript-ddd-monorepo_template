@@ -1,4 +1,4 @@
-import type { IIdGenerator } from '@repo-packages/domain-core';
+import type { IIdGenerator } from '@repo-domains/domain-core';
 import { logger } from '@repo-packages/logger';
 import { v4 as uuidv4 } from 'uuid';
 

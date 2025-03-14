@@ -15,7 +15,8 @@
     "lint": "biome check .",
     "lint:fix": "biome check --apply .",
     "format": "biome format .",
-    "format:fix": "biome format --write ."
+    "format:fix": "biome format --write .",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@repo-domains/domain-core": "workspace:*",

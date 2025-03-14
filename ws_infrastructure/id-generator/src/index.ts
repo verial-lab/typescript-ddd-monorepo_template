@@ -5,4 +5,4 @@ export { UuidGenerator } from './UuidGenerator';
 export { idGenerator } from './IdGeneratorService';
 
 // Re-export the interface type for convenience
-export type { IIdGenerator } from '@repo-packages/domain-core';
+export type { IIdGenerator } from '@repo-domains/domain-core';
