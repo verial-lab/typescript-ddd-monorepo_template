@@ -1,5 +1,4 @@
 # TypeScript DDD Monorepo Template
-Test line to verify pre-commit hook
 
 A comprehensive monorepo template optimized for TypeScript, Domain-Driven Design (DDD), and modern development workflows.
 
