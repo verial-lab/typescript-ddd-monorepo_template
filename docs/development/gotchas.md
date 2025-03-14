@@ -163,3 +163,37 @@ const idGenerator: IIdGenerator = new UuidGenerator();
 // ❌ Bad: Domain depending on infrastructure
 import { UuidGenerator } from '@repo-infrastructure/id-generator';
 // Don't use infrastructure directly in domain code
+
+```
+
+## Package Management
+
+### PNPM Version Compatibility
+
+**Issue**: PNPM lockfile formats can be incompatible between major versions, causing CI failures with `--frozen-lockfile`.
+
+**Solution**: We maintain consistent PNPM versions:
+
+1. Use major version in CI workflows:
+   ```yaml
+   - uses: pnpm/action-setup@v4
+     with:
+       version: 9  # Major version only for flexibility
+   ```
+
+2. Local development should use PNPM v9.x:
+   ```bash
+   # Check version
+   pnpm --version  # Should be 9.x.x
+
+   # Install specific version if needed
+   corepack prepare pnpm@9 --activate
+   ```
+
+3. If you encounter lockfile issues:
+   ```bash
+   # Regenerate lockfile
+   rm pnpm-lock.yaml
+   pnpm install
+   # Commit the new lockfile
+   ```

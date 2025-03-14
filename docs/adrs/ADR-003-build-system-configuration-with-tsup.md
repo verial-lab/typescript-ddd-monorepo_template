@@ -50,6 +50,25 @@ For packages with special needs:
 - Entry points can be customized
 - Output formats can be adjusted
 
+### Type Checking Strategy
+
+While tsup is used for building and generating declaration files, we intentionally separate type checking into its own concern. We use `tsc --noEmit` for type checking across all TypeScript packages for several reasons:
+
+1. Separation of Concerns:
+   - tsup (with esbuild) is optimized for fast builds and bundling
+   - `tsc` is the authoritative tool for TypeScript type checking
+   - Using `--noEmit` means we only use tsc for its comprehensive type checking capabilities, not its slower build process
+
+2. Type Safety:
+   - tsup's type checking capabilities are limited
+   - `tsc` provides more thorough type analysis and catches potential type errors
+   - This approach ensures we don't miss type errors that might slip through tsup's more basic checks
+
+3. Development Workflow:
+   - Build tasks (tsup) and type checking tasks (tsc) are separate in our Turborepo pipeline
+   - This allows for faster development cycles while maintaining type safety
+   - Developers can run type checks independently of builds when needed
+
 ## Consequences
 
 ### Positive
