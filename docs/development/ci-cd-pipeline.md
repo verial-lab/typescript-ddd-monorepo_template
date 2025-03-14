@@ -112,7 +112,7 @@ Features:
   run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
 - name: Setup pnpm cache
-  uses: actions/cache@v3
+  uses: actions/cache@v4
   with:
     path: ${{ env.STORE_PATH }}
     key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
@@ -130,7 +130,7 @@ Benefits:
 
 ```yaml
 - name: Setup Turborepo cache
-  uses: actions/cache@v3
+  uses: actions/cache@v4
   with:
     path: .turbo
     key: ${{ runner.os }}-turbo-${{ github.sha }}
@@ -148,7 +148,7 @@ Benefits:
 
 ```yaml
 - name: Upload build artifacts
-  uses: actions/upload-artifact@v3
+  uses: actions/upload-artifact@v4
   with:
     name: build-artifacts
     path: |
