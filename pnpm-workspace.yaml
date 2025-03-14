@@ -1,3 +1,8 @@
 packages:
-  - "ws_*/*"
-  - "ws_tooling/*" 
+  - 'ws_apps/*'
+  - 'ws_domains/auth'
+  - 'ws_domains/domain-core'
+  - 'ws_domains/profile'
+  - 'ws_infrastructure/*'
+  - 'ws_packages/*'
+  - 'ws_tooling/*' 

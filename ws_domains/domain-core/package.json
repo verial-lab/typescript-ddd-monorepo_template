@@ -8,7 +8,7 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
-    "lint": "biome check .",
+    "lint": "node scripts/validate-domain-dependencies.js && biome check .",
     "test": "vitest run",
     "test:watch": "vitest watch",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
