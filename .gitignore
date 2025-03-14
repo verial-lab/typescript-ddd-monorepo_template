@@ -1,6 +1,7 @@
 # Local
 .history
 .turbo
+.pnpm-store/
 
 # Local development files and directories
 _local/

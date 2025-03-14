@@ -14,12 +14,20 @@
     "test": "turbo run test test:e2e",
     "test:unit": "turbo run test",
     "test:e2e": "turbo run test:e2e",
+    "test:cicd": "./ws_tooling/cicd/scripts/run-actions.sh --workflow ci.yml --verbose",
+    "typecheck": "turbo run typecheck",
     "precheck": "pnpm lint:fix && pnpm format",
-    "check": "pnpm format:check && pnpm lint && pnpm build && pnpm test",
+    "check": "pnpm format:check && pnpm lint && pnpm typecheck && pnpm build && pnpm test",
     "check:fix": "pnpm format && pnpm lint:fix && pnpm build && pnpm test",
     "clean": "turbo run clean && rm -rf node_modules",
     "prepare": "husky",
     "graph": "pnpm build && node ws_tooling/dep-graph/dist/cli.js"
+  },
+  "lint-staged": {
+    "*": [
+      "biome check --write",
+      "biome format --write"
+    ]
   },
   "keywords": [
     "typescript",
@@ -38,9 +46,9 @@
   "license": "MIT",
   "engines": {
     "node": ">=18.0.0",
-    "pnpm": ">=8.0.0"
+    "pnpm": ">=9.0.0"
   },
-  "packageManager": "pnpm@8.15.1",
+  "packageManager": "pnpm@9.14.2",
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@commitlint/cli": "^19.8.0",
@@ -58,6 +66,7 @@
     "@vitejs/plugin-react": "^4.3.4",
     "husky": "^9.1.7",
     "jsdom": "^26.0.0",
+    "lint-staged": "^15.5.0",
     "supertest": "^7.0.0",
     "tsup": "^8.4.0",
     "turbo": "^2.4.4",
