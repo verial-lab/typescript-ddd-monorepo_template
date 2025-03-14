@@ -1,11 +1,39 @@
 import { randomUUID } from 'crypto';
 
-// User-provided properties
-export interface DomainEventCreateProps {
-  eventType: string;
+// Base event types
+export type BaseEventType = 'created' | 'updated' | 'deleted';
+
+// Base event payload that all events must include
+export interface BaseEventPayload {
+  eventType: BaseEventType | string;
+  timestamp: Date;
+}
+
+// Base event payload for created events
+export interface CreatedEventPayload extends BaseEventPayload {
+  eventType: 'created';
+}
+
+// Base event payload for updated events
+export interface UpdatedEventPayload extends BaseEventPayload {
+  eventType: 'updated';
+  changes: Record<string, unknown>;
+}
+
+// Base event payload for deleted events
+export interface DeletedEventPayload extends BaseEventPayload {
+  eventType: 'deleted';
+  reason?: string;
+}
+
+// User-provided properties with generic payload
+export interface DomainEventCreateProps<T extends BaseEventPayload> {
+  eventId: string;
+  eventType: T['eventType'];
+  occurredOn: Date;
   aggregateId: string;
-  version?: number;
-  payload?: Record<string, unknown>;
+  version: number;
+  payload: T;
 }
 
 // System-calculated properties
@@ -15,30 +43,39 @@ export interface DomainEventSystemProps {
 }
 
 // Combined properties
-export type DomainEventProps = DomainEventCreateProps & DomainEventSystemProps;
+export type DomainEventProps<T extends BaseEventPayload> = DomainEventCreateProps<T> &
+  DomainEventSystemProps;
 
-export interface IDomainEvent {
-  readonly eventId: string;
-  readonly eventType: string;
-  readonly occurredOn: Date;
-  readonly aggregateId: string;
-  readonly version: number;
-  readonly payload?: Record<string, unknown>;
+export interface IDomainEvent<T extends BaseEventPayload = BaseEventPayload> {
+  eventId: string;
+  eventType: T['eventType'];
+  occurredOn: Date;
+  aggregateId: string;
+  version: number;
+  payload: T;
 }
 
-export interface IEventHandler<T extends IDomainEvent> {
-  handle(event: T): Promise<void>;
+export interface IEventValidator<T extends BaseEventPayload = BaseEventPayload> {
+  validate(event: IDomainEvent<T>): Promise<void>;
 }
 
-export interface IEventBus {
-  publish<T extends IDomainEvent>(event: T): Promise<void>;
-  subscribe<T extends IDomainEvent>(eventType: string, handler: IEventHandler<T>): void;
+export interface IEventHandler<T extends BaseEventPayload = BaseEventPayload> {
+  handle(event: IDomainEvent<T>): Promise<void>;
 }
 
-export abstract class DomainEvent implements IDomainEvent {
-  private readonly _props: DomainEventProps;
+export interface IEventBus<T extends BaseEventPayload = BaseEventPayload> {
+  publish(event: IDomainEvent<T>): Promise<void>;
+  subscribe(eventType: T['eventType'], handler: IEventHandler<T>): Promise<void>;
+  unsubscribe(eventType: T['eventType'], handler: IEventHandler<T>): Promise<void>;
+}
 
-  constructor(createProps: DomainEventCreateProps, systemProps?: Partial<DomainEventSystemProps>) {
+export abstract class DomainEvent<T extends BaseEventPayload> implements IDomainEvent<T> {
+  private readonly _props: DomainEventProps<T>;
+
+  constructor(
+    createProps: DomainEventCreateProps<T>,
+    systemProps?: Partial<DomainEventSystemProps>
+  ) {
     this._props = {
       ...createProps,
       version: createProps.version || 1,
@@ -51,7 +88,7 @@ export abstract class DomainEvent implements IDomainEvent {
     return this._props.eventId;
   }
 
-  get eventType(): string {
+  get eventType(): BaseEventType | string {
     return this._props.eventType;
   }
 
@@ -67,7 +104,7 @@ export abstract class DomainEvent implements IDomainEvent {
     return this._props.version!;
   }
 
-  get payload(): Record<string, unknown> | undefined {
+  get payload(): T {
     return this._props.payload;
   }
 }
