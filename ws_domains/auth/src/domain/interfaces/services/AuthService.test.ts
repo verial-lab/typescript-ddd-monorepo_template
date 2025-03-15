@@ -1,21 +1,21 @@
 import { Entity } from '@repo-domains/domain-core';
 import type { Logger } from '@repo-domains/domain-core';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { User } from '../entities';
-import { UserCreatedEvent } from '../events';
-import type { UserRepository } from '../repositories';
-import { Email, Password } from '../value-objects';
+import { UserCreatedEvent } from '../../events/UserCreatedEvent';
+import { Email, Password } from '../../models';
+import { User } from '../../models/User';
+import type { IUserRepository } from '../repositories/UserRepository';
 import { AuthService } from './AuthService';
-import type { HashService } from './HashService';
+import type { IHashService } from './HashService';
 
 // Mock value objects
-vi.mock('../value-objects/Email', () => ({
+vi.mock('../../models/Email', () => ({
   Email: {
     create: vi.fn().mockImplementation((email) => ({ value: email })),
   },
 }));
 
-vi.mock('../value-objects/Password', () => ({
+vi.mock('../../models/Password', () => ({
   Password: {
     create: vi.fn().mockImplementation((password) => ({ value: password })),
   },
@@ -23,8 +23,8 @@ vi.mock('../value-objects/Password', () => ({
 
 describe('AuthService', () => {
   let authService: AuthService;
-  let userRepository: UserRepository;
-  let hashService: HashService;
+  let userRepository: IUserRepository;
+  let hashService: IHashService;
   let logger: Logger;
 
   beforeEach(() => {
@@ -71,7 +71,7 @@ describe('AuthService', () => {
       vi.mocked(userRepository.findByEmail).mockResolvedValue(null);
       vi.mocked(userRepository.findByUsername).mockResolvedValue(null);
       vi.mocked(hashService.hash).mockResolvedValue(hashedPassword);
-      vi.mocked(userRepository.save).mockImplementation((user) => Promise.resolve(user));
+      vi.mocked(userRepository.save).mockImplementation(() => Promise.resolve());
     });
 
     it('should register a new user successfully', async () => {

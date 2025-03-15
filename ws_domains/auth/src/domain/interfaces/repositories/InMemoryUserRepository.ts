@@ -1,7 +1,8 @@
 import type { Logger } from '@repo-domains/domain-core';
-import type { User } from '../entities';
+import type { User } from '../../models/User';
 import { InMemoryRepository } from './InMemoryRepository';
 import type { Repository } from './Repository';
+import { IUserRepository } from './UserRepository';
 
 /**
  * User repository interface
