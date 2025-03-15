@@ -2,20 +2,8 @@
  * Authentication Domain Module
  */
 
-// Domain entities
-export * from './entities';
+// Domain exports
+export * from './domain';
 
-// Domain value objects
-export * from './value-objects/Password';
-
-// Domain repositories
-export * from './repositories';
-
-// Domain services
-export * from './services';
-
-// Domain events
-export * from './events';
-
-// Domain interfaces
-export * from './services/HashService';
+// Infrastructure exports
+export * from './infrastructure/repositories/InMemoryUserRepository';

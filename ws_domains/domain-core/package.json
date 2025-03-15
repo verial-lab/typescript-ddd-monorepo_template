@@ -8,11 +8,13 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
-    "lint": "node scripts/validate-domain-dependencies.js && biome check .",
+    "format": "biome format . --write",
+    "lint": "biome check . && pnpm run validate:domain-structure",
     "test": "vitest run",
     "test:watch": "vitest watch",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "validate:domain-structure": "node scripts/validate-domain-structure.js"
   },
   "devDependencies": {
     "tsup": "^8.0.2",

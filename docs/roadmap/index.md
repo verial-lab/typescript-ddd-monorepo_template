@@ -10,6 +10,12 @@ This document outlines the planned features, improvements, and initiatives for t
 | ROAD-I002 | [Reference Modules Integration and Enhancement](./road-I002-reference-modules-integration.md) | 📋 Planned | 🚀 High | domain-evolution, architecture, infrastructure |
 | ROAD-I003 | [CI/CD Pipeline Implementation](./road-I003-ci-cd-pipeline.md) | 📋 Planned | 🔥 Critical | infrastructure, automation |
 
+## Features
+
+| Number | Title | Status | Priority | Labels |
+|--------|--------|--------|----------|---------|
+| ROAD-F001 | [UI E2E Example with Event Bus](./road-F001-ui-e2e-example.md) | 📋 Planned | 🚀 High | example, event-bus, react, profile-domain, e2e |
+
 ## Tooling
 
 | Number | Title | Status | Priority | Labels |

@@ -11,6 +11,7 @@ This directory contains Architectural Decision Records (ADRs) that document sign
 - [ADR-006: Documentation Table of Contents Structure](./ADR-006-documentation-table-of-contents.md)
 - [ADR-007: Colocated .gitignore Files for Enhanced Modularity](./ADR-007-colocated-gitignore-files.md)
 - [ADR-012: Document Naming Conventions](./ADR-012-document-naming-conventions.md)
+- [ADR-017: Package Naming and Organization](./ADR-017-package-naming-and-organization.md)
 
 ### Development Configuration
 
