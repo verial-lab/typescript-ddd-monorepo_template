@@ -1,0 +1,45 @@
+{
+  "extends": "../../.valorator.json",
+  "rules": {
+    "test-coverage": {
+      "enabled": true,
+      "threshold": {
+        "statements": 80,
+        "branches": 80,
+        "functions": 80,
+        "lines": 80
+      }
+    },
+    "dependencies": {
+      "required": ["kafkajs", "zod"],
+      "forbidden": []
+    },
+    "typescript": {
+      "strict": true,
+      "noImplicitAny": true,
+      "strictNullChecks": true,
+      "strictFunctionTypes": true,
+      "strictBindCallApply": true,
+      "strictPropertyInitialization": true,
+      "noImplicitThis": true,
+      "useUnknownInCatchVariables": true,
+      "alwaysStrict": true,
+      "noUnusedLocals": true,
+      "noUnusedParameters": true,
+      "exactOptionalPropertyTypes": true,
+      "noImplicitReturns": true,
+      "noFallthroughCasesInSwitch": true,
+      "noUncheckedIndexedAccess": true,
+      "noImplicitOverride": true,
+      "noPropertyAccessFromIndexSignature": true
+    },
+    "naming": {
+      "classes": "^[A-Z][a-zA-Z0-9]*$",
+      "interfaces": "^I[A-Z][a-zA-Z0-9]*$",
+      "types": "^[A-Z][a-zA-Z0-9]*$",
+      "functions": "^[a-z][a-zA-Z0-9]*$",
+      "variables": "^[a-z][a-zA-Z0-9]*$",
+      "constants": "^[A-Z][A-Z0-9_]*$"
+    }
+  }
+}
