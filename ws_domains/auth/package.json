@@ -15,7 +15,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@repo-domains/domain-core": "0.0.1"
+    "@repo-domains/domain-core": "workspace:*"
   },
   "devDependencies": {
     "tsup": "^8.0.2",

@@ -14,7 +14,6 @@
     "test:coverage": "vitest run --coverage",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
     "typecheck": "tsc --noEmit",
-    "validate": "valorator validate",
     "prepublishOnly": "pnpm run build",
     "pretest": "pnpm run typecheck",
     "format": "biome format . --write"
@@ -24,8 +23,7 @@
     "@vitest/coverage-v8": "^1.6.1",
     "tsup": "^8.0.2",
     "typescript": "^5.3.3",
-    "vitest": "^1.6.1",
-    "valorator": "^2.0.0"
+    "vitest": "^1.6.1"
   },
   "dependencies": {
     "@repo-domains/domain-core": "workspace:*",
