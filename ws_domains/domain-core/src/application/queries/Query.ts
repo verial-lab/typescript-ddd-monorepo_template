@@ -1,4 +1,4 @@
-import { randomUUID } from 'crypto';
+import type { CryptoService } from '../../domain/interfaces/services';
 
 // User-provided properties
 export interface QueryCreateProps<T> {
@@ -31,30 +31,36 @@ export interface IQueryBus {
   register<T, R>(type: string, handler: IQueryHandler<T, R>): void;
 }
 
-export abstract class Query<T, R> implements IQuery<T, R> {
-  private readonly _props: QueryProps<T>;
+export abstract class Query<T = unknown> {
+  private readonly _queryId: string;
+  private readonly _timestamp: Date;
+  private readonly _payload: T;
 
-  constructor(createProps: QueryCreateProps<T>, systemProps?: Partial<QuerySystemProps>) {
-    this._props = {
-      ...createProps,
-      timestamp: systemProps?.timestamp || new Date(),
-      queryId: systemProps?.queryId || randomUUID(),
-    };
+  constructor(
+    private readonly cryptoService: CryptoService,
+    payload: T,
+    systemProps?: { queryId?: string; timestamp?: Date }
+  ) {
+    this._queryId = systemProps?.queryId || cryptoService.generateId();
+    this._timestamp = systemProps?.timestamp || new Date();
+    this._payload = payload;
   }
+
+  abstract get queryType(): string;
 
   get type(): string {
-    return this._props.type;
-  }
-
-  get payload(): T {
-    return this._props.payload;
-  }
-
-  get timestamp(): Date {
-    return this._props.timestamp;
+    return this.queryType;
   }
 
   get queryId(): string {
-    return this._props.queryId;
+    return this._queryId;
+  }
+
+  get timestamp(): Date {
+    return this._timestamp;
+  }
+
+  get payload(): T {
+    return this._payload;
   }
 }

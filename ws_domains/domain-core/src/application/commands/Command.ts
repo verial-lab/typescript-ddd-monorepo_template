@@ -1,4 +1,4 @@
-import { randomUUID } from 'crypto';
+import type { CryptoService } from '../../domain/interfaces/services';
 
 // User-provided properties
 export interface CommandCreateProps<T> {
@@ -6,13 +6,13 @@ export interface CommandCreateProps<T> {
   payload: T;
 }
 
-// System-calculated properties
+// System-generated properties
 export interface CommandSystemProps {
-  timestamp: Date;
   commandId: string;
+  timestamp: Date;
 }
 
-// Combined properties
+// All command properties
 export type CommandProps<T> = CommandCreateProps<T> & CommandSystemProps;
 
 export interface ICommand<T> {
@@ -31,15 +31,27 @@ export interface ICommandBus {
   register<T>(type: string, handler: ICommandHandler<T>): void;
 }
 
-export abstract class Command<T> implements ICommand<T> {
+export abstract class Command<T = unknown> {
   private readonly _props: CommandProps<T>;
 
-  constructor(createProps: CommandCreateProps<T>, systemProps?: Partial<CommandSystemProps>) {
+  constructor(
+    private readonly cryptoService: CryptoService,
+    createProps: CommandCreateProps<T>,
+    systemProps?: Partial<CommandSystemProps>
+  ) {
     this._props = {
       ...createProps,
       timestamp: systemProps?.timestamp || new Date(),
-      commandId: systemProps?.commandId || randomUUID(),
+      commandId: systemProps?.commandId || cryptoService.generateId(),
     };
+  }
+
+  get commandId(): string {
+    return this._props.commandId;
+  }
+
+  get timestamp(): Date {
+    return this._props.timestamp;
   }
 
   get type(): string {
@@ -50,11 +62,5 @@ export abstract class Command<T> implements ICommand<T> {
     return this._props.payload;
   }
 
-  get timestamp(): Date {
-    return this._props.timestamp;
-  }
-
-  get commandId(): string {
-    return this._props.commandId;
-  }
+  abstract get commandType(): string;
 }

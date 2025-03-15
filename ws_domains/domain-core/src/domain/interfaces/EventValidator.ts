@@ -1,6 +1,6 @@
-import type { IDomainEvent } from './DomainEvent';
+import type { IDomainEvent } from '../events/DomainEvent';
 
-export interface IEventValidator {
+export interface IEventSchemaValidator {
   /**
    * Validates an event's payload against its schema
    * @throws {Error} if validation fails

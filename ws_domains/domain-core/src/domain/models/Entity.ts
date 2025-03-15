@@ -1,4 +1,4 @@
-import type { IIdGenerator } from './IdGenerator';
+import type { IIdGenerator } from '../interfaces/IdGenerator';
 
 // Base interfaces for the Props Pattern
 export type EntityCreateProps = Record<string, unknown>;
