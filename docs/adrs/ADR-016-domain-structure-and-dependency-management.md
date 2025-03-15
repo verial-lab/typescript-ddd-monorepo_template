@@ -1,8 +1,26 @@
 # ADR 016: Domain Structure and Dependency Management
 
+- [ADR 016: Domain Structure and Dependency Management](#adr-016-domain-structure-and-dependency-management)
+  - [Status](#status)
+  - [Scope](#scope)
+  - [Context](#context)
+  - [Decision](#decision)
+  - [Consequences](#consequences)
+    - [Positive](#positive)
+    - [Negative](#negative)
+  - [Implementation](#implementation)
+  - [Compliance](#compliance)
+  - [Related](#related)
+
 ## Status
 
-Proposed
+Accepted
+
+## Scope
+
+> **Important**: This ADR specifically applies to packages within the `ws_domains/` workspace directory of this monorepo. This structure and these rules are mandatory for all domain packages in this workspace, ensuring consistent architecture across our domain implementations.
+
+While the principles described here could be applied more broadly, the specific structure, tooling, and validation described in this document are designed for and enforced within our domain workspace packages.
 
 ## Context
 
@@ -13,6 +31,7 @@ In our DDD implementation, we face two competing architectural goals:
 2. **Domain Layer Isolation**: Clean Architecture principles suggest isolating domain logic from infrastructure concerns and maintaining zero dependencies except for core domain interfaces.
 
 Additionally, we need to:
+
 - Maintain clear architectural boundaries
 - Enforce dependency rules
 - Keep code organized and maintainable
@@ -20,47 +39,64 @@ Additionally, we need to:
 
 ## Decision
 
-We will adopt a hybrid approach that:
+We will adopt a hexagonal architecture with clear layer separation:
 
-1. **Maintains Bounded Context Structure**
+1. **Domain Layer Structure**
+
    ```
-   src/
-   ├── api/              # Command and Query definitions
-   │   ├── commands.ts   # Write operations
-   │   └── queries.ts    # Read operations
-   │
-   ├── application/      # Use case implementations
-   │   ├── commands/     # Command handlers
-   │   └── queries/      # Query handlers
-   │
-   ├── domain/          # Pure domain logic
-   │   ├── entities/    # Domain entities
-   │   ├── events/      # Domain events
-   │   ├── interfaces/  # Repository/Service interfaces
-   │   └── models/      # Value objects, types
-   │
-   └── infrastructure/  # Interface implementations
-       └── repositories/ # Repository implementations
+   domain/
+   ├── events/         # Domain events
+   │   └── ProfileCreatedEvent.ts, etc.
+   ├── interfaces/     # All domain contracts
+   │   ├── repositories/ # Repository interfaces
+   │   └── services/    # Domain service interfaces
+   └── models/        # Domain models and value objects
    ```
 
-2. **Enforces Strict Dependency Rules**
-   - Domain layer can only depend on @repo-domains/domain-core
-   - Application layer depends on domain layer
-   - Infrastructure implements domain interfaces
-   - No circular dependencies allowed
-   - Dependencies flow toward domain layer
+   - **Dependencies**: ONLY @repo-domains/domain-core
+   - **Responsibility**: Pure business logic and contracts
+   - **Rules**: No infrastructure imports, no framework dependencies
 
-3. **Reorganizes Infrastructure Packages**
-   - Move from ws_infrastructure/* to ws_packages/i_*
-   - Example: ws_packages/i_supabase
+2. **Application Layer Structure**
+
+   ```
+   application/
+   ├── commands/      # Write operations (use cases)
+   │   └── CreateProfile.ts, etc.
+   └── queries/       # Read operations (use cases)
+       └── GetProfile.ts, etc.
+   ```
+
+   - **Dependencies**: domain layer + domain-core
+   - **Responsibility**: Orchestrating use cases
+   - **Rules**: No direct infrastructure dependencies
+
+3. **Infrastructure Layer Structure**
+
+   ```
+   infrastructure/
+   ├── repositories/  # Repository implementations
+   └── services/     # Service implementations
+   ```
+
+   - **Dependencies**: Can use external packages
+   - **Responsibility**: Implement domain interfaces
+   - **Rules**: Must implement domain contracts
+
+4. **Dependency Flow**
+
+   ```
+   Infrastructure → Application → Domain
+                                  ↑
+                            domain-core
+   ```
+
+5. **Infrastructure Package Naming**
+
+   - Move infrastructure packages from `ws_infrastructure/` to `ws_packages/i_*`
+   - Example: `ws_packages/i_supabase`
    - Clear naming convention for infrastructure implementations
    - Centralized location for reusable infrastructure
-
-4. **Implements Automated Validation**
-   - Package.json dependency checks
-   - Source code import validation
-   - Layer boundary enforcement
-   - Interface implementation verification
 
 ## Consequences
 
@@ -110,43 +146,45 @@ We will adopt a hybrid approach that:
 ## Implementation
 
 1. **Validation Script**
+
    ```javascript
-   // validate-domain-dependencies.js
+   // validate-domain-structure.js
    module.exports = {
-     validateDependencies(pkg) {
-       // Only allow domain-core dependency
-       const deps = pkg.dependencies || {};
-       if (Object.keys(deps).length !== 1 || !deps['@repo-domains/domain-core']) {
+     validateStructure(domainPath) {
+       // Check required directories exist
+       const requiredDirs = [
+         'domain/events',
+         'domain/interfaces',
+         'domain/models',
+         'application/commands',
+         'application/queries',
+         'infrastructure'
+       ];
+       
+       // Validate domain dependencies
+       const domainDeps = pkg.dependencies || {};
+       if (Object.keys(domainDeps).length !== 1 || !domainDeps['@repo-domains/domain-core']) {
          throw new Error('Domain packages can only depend on domain-core');
        }
-     },
-     
-     validateImports(sourceFile) {
-       // Ensure imports follow layer rules
-       // Check interface implementations
-       // Verify dependency direction
+       
+       // Validate import rules
+       // - Domain can only import from domain-core
+       // - Application can only import from domain
+       // - Infrastructure must implement domain interfaces
      }
    };
    ```
 
-2. **Package Naming**
-   ```
-   ws_packages/
-   ├── i_supabase/        # Infrastructure: Supabase
-   ├── i_event-bus/       # Infrastructure: Event bus
-   ├── i_hash-service/    # Infrastructure: Hashing
-   └── logger/            # General utility (no prefix)
-   ```
+2. **CI Integration**
 
-3. **CI Integration**
    ```yaml
    # .github/workflows/validate.yml
    steps:
-     - name: Validate Domain Dependencies
-       run: pnpm run validate:domains
+     - name: Validate Domain Structure
+       run: pnpm run validate:domain-structure
      
-     - name: Validate Layer Boundaries
-       run: pnpm run validate:layers
+     - name: Validate Dependencies
+       run: pnpm run validate:dependencies
    ```
 
 ## Compliance
@@ -154,9 +192,9 @@ We will adopt a hybrid approach that:
 When working in domain packages:
 
 1. **Package Dependencies**
-   - [ ] Only @repo-domains/domain-core listed
-   - [ ] No infrastructure dependencies
-   - [ ] No application framework dependencies
+   - [ ] Only @repo-domains/domain-core listed in domain layer
+   - [ ] No infrastructure dependencies in domain/application
+   - [ ] No application framework dependencies in domain
 
 2. **Code Organization**
    - [ ] Correct folder structure
@@ -164,13 +202,14 @@ When working in domain packages:
    - [ ] Interface-first design
 
 3. **Import Rules**
-   - [ ] No imports from infrastructure
+   - [ ] Domain only imports from domain-core
+   - [ ] Application only imports from domain
+   - [ ] Infrastructure implements domain interfaces
    - [ ] No circular dependencies
-   - [ ] Clear dependency direction
 
 4. **Testing**
    - [ ] Pure domain tests
-   - [ ] No infrastructure in tests
+   - [ ] No infrastructure in domain tests
    - [ ] Interface-based testing
 
 ## Related

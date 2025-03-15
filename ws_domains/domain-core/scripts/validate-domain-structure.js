@@ -326,9 +326,9 @@ let hasErrors = false;
 console.log('\nValidating domain packages...\n');
 
 for (const domain of domains) {
-  // Skip if not a directory or if it's the current domain-core package
+  // Skip if not a directory
   const domainPath = path.join(domainsDir, domain);
-  if (!fs.statSync(domainPath).isDirectory() || domain === 'domain-core') {
+  if (!fs.statSync(domainPath).isDirectory()) {
     continue;
   }
 

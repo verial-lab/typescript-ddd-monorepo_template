@@ -2,8 +2,11 @@
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local"],
   "tasks": {
+    "validate:deps": {
+      "inputs": ["package.json"]
+    },
     "build": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "validate:deps"],
       "outputs": ["dist/**", ".next/**", "build/**"],
       "inputs": ["src/**", "package.json", "tsconfig.json", "tsup.config.ts"]
     },
