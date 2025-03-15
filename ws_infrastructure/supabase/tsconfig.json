@@ -1,8 +1,0 @@
-{
-  "extends": "../../ws_tooling/tsconfig/base.json",
-  "compilerOptions": {
-    "module": "ES2020"
-  },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist"]
-}
