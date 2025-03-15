@@ -1,4 +1,4 @@
-import { type BaseEventPayload, DomainEvent } from '@repo-domains/domain-core';
+import { type BaseEventPayload, type CryptoService, DomainEvent } from '@repo-domains/domain-core';
 
 interface UserDeletedPayload extends BaseEventPayload {
   eventType: 'auth.user.deleted';
@@ -6,10 +6,10 @@ interface UserDeletedPayload extends BaseEventPayload {
 }
 
 export class UserDeletedEvent extends DomainEvent<UserDeletedPayload> {
-  constructor(userId: string) {
+  constructor(cryptoService: CryptoService, userId: string) {
     const now = new Date();
 
-    super({
+    super(cryptoService, {
       eventId: userId,
       eventType: 'auth.user.deleted',
       occurredOn: now,

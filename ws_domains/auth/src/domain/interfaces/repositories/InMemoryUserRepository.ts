@@ -34,7 +34,7 @@ export class InMemoryUserRepository
   }
 
   async save(user: User): Promise<User> {
-    this.logger.info({ userId: user.id }, 'Saving user');
+    this.logger.info(`Saving user ${user.id}`);
     return super.save(user);
   }
 }

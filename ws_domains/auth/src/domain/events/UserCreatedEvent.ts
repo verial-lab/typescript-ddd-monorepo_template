@@ -1,13 +1,29 @@
-import { BaseDomainEvent } from './BaseDomainEvent';
+import { type BaseEventPayload, type CryptoService, DomainEvent } from '@repo-domains/domain-core';
 
-/**
- * User created event
- */
-export class UserCreatedEvent extends BaseDomainEvent {
+interface UserCreatedPayload extends BaseEventPayload {
+  eventType: 'auth.user.created';
   userId: string;
+}
 
-  constructor(userId: string) {
-    super('user.created');
-    this.userId = userId;
+export class UserCreatedEvent extends DomainEvent<UserCreatedPayload> {
+  constructor(cryptoService: CryptoService, userId: string) {
+    const now = new Date();
+
+    super(cryptoService, {
+      eventId: userId,
+      eventType: 'auth.user.created',
+      occurredOn: now,
+      aggregateId: userId,
+      version: 1,
+      payload: {
+        eventType: 'auth.user.created',
+        timestamp: now,
+        userId,
+      },
+    });
+  }
+
+  get userId(): string {
+    return this.payload.userId;
   }
 }

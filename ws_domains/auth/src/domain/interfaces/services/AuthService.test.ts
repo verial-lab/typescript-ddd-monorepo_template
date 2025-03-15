@@ -1,5 +1,5 @@
 import { Entity } from '@repo-domains/domain-core';
-import type { Logger } from '@repo-domains/domain-core';
+import type { CryptoService, Logger } from '@repo-domains/domain-core';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { UserCreatedEvent } from '../../events/UserCreatedEvent';
 import { Email, Password } from '../../models';
@@ -26,6 +26,7 @@ describe('AuthService', () => {
   let userRepository: IUserRepository;
   let hashService: IHashService;
   let logger: Logger;
+  let cryptoService: CryptoService;
 
   beforeEach(() => {
     // Set up mock IdGenerator
@@ -55,7 +56,11 @@ describe('AuthService', () => {
       debug: vi.fn(),
     };
 
-    authService = new AuthService(userRepository, hashService, logger);
+    cryptoService = {
+      generateId: vi.fn().mockReturnValue('mock-event-id'),
+    };
+
+    authService = new AuthService(userRepository, hashService, logger, cryptoService);
 
     // Clear mock calls
     vi.clearAllMocks();

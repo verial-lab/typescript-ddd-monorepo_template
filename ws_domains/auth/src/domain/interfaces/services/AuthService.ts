@@ -1,5 +1,5 @@
-import type { DomainService, Logger } from '@repo-domains/domain-core';
-import { UserCreatedEvent } from '../../events/UserCreated';
+import type { CryptoService, DomainService, Logger } from '@repo-domains/domain-core';
+import { UserCreatedEvent } from '../../events/UserCreatedEvent';
 import { Email } from '../../models/Email';
 import { Password } from '../../models/Password';
 import { User } from '../../models/User';
@@ -22,7 +22,8 @@ export class AuthService implements IAuthService {
   constructor(
     private readonly userRepository: IUserRepository,
     private readonly hashService: IHashService,
-    private readonly logger: Logger
+    private readonly logger: Logger,
+    private readonly cryptoService: CryptoService
   ) {}
 
   /**
@@ -62,12 +63,14 @@ export class AuthService implements IAuthService {
       await this.userRepository.save(user);
 
       // Emit event
-      new UserCreatedEvent(user.id);
+      new UserCreatedEvent(this.cryptoService, user.id);
 
-      this.logger.info({ userId: user.id }, 'User registered successfully');
+      this.logger.info(`User registered successfully: ${user.id}`);
       return user;
     } catch (error) {
-      this.logger.error({ error }, 'Failed to register user');
+      this.logger.error(
+        `Failed to register user: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
       throw error;
     }
   }
@@ -102,7 +105,9 @@ export class AuthService implements IAuthService {
 
       return user;
     } catch (error) {
-      this.logger.error({ error }, 'Failed to authenticate user');
+      this.logger.error(
+        `Failed to authenticate user: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
       throw error;
     }
   }
